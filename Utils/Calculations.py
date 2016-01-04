@@ -2,6 +2,10 @@
 import numpy as np
 from Dataset import Dataset
 
+# TODO: Add Support for RMS
+
+
+
 def findBackgroundByAverage(dataset: Dataset, startPoint=0, endPoint=5):
     bg = []
     for i in range(len(dataset.getYUnits())):

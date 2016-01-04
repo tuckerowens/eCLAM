@@ -1,6 +1,7 @@
 from Dataset import Dataset
 from Utils import Calculations
 
+# TODO: Add support for RMS bg subtraction
 
 class Filter(Dataset):
 
