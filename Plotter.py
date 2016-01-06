@@ -55,6 +55,9 @@ class Plotter:
         Z = np.array(self.dataset.getPlane()).transpose()
 
         a.pcolormesh(X, Y, Z)
+        bar = matplotlib.cm.ScalarMappable()
+        bar.set_array(Z)
+        f.colorbar(bar, ax=a)
 
         if xHighlight != None:
             a.axvline(x=xHighlight)
