@@ -9,6 +9,7 @@ import PIL
 from PIL import ImageTk
 from tkinter import filedialog
 from Utils.Enums import PlotType
+import Filters, inspect
 
 import sys
 if sys.version_info[0] < 3:
@@ -134,21 +135,33 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.plotOptions.grid(sticky=NSEW)
         self.activePlotOptions = None
 
-        self.backgroundOptions = LabelFrame(self.sidebar, text="Background Configuration")
+        self.backgroundOptions = LabelFrame(self.sidebar, text="Filter Options")
         self.backgroundOptions.grid(sticky=NSEW)
 
-        self.chkVarAddBg = IntVar()
-        chkAddBackground = Checkbutton(self.backgroundOptions, text="Apply Background subtraction", variable=self.chkVarAddBg, command=self.applyBgChanged)
-        chkAddBackground.grid(sticky=NSEW)
+        self.chkVarsFilters = {}
+        self.filterOptions = {}
+        for name, obj in inspect.getmembers(sys.modules[Filters.BackgroundSubtraction.__module__]):
+            if inspect.isclass(obj) and issubclass(obj, Filters.Filter):
+                if name != "Filter":
+                    self.chkVarsFilters[name] = IntVar()
+                    self.filterOptions[name] = obj
+                    args, vargs, keys, defaults = inspect.getargspec(obj)
+                    # print(args)
+                    temp = Checkbutton(self.backgroundOptions, text=name, variable=self.chkVarsFilters[name], command=self.filtersChanged)
+                    temp.grid(sticky=NSEW)
 
 
-    def applyBgChanged(self):
+
+    def filtersChanged(self):
         if self.plotter == None:
             return
-        if self.chkVarAddBg.get():
-            self.plotter.updateData(Filters.BackgroundSubtraction(self.dataset))
-        else:
-            self.plotter.updateData(self.dataset)
+        filterStack = self.dataset
+        for className in self.filterOptions.keys():
+            if self.chkVarsFilters[className].get():
+                filterStack = self.filterOptions[className](filterStack)
+                print("Applying Filter: %s" % (className))
+        self.plotter.updateData(filterStack)
+        self.updateView()
 
     def updateActivePlot(self, event):
         self.activePlot = list(self.plots.keys())[self.lstActivePlots.curselection()[0]]

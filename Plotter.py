@@ -1,6 +1,7 @@
 import matplotlib
 import numpy as np
 from matplotlib.figure import Figure
+from scipy.ndimage.filters import gaussian_filter
 from Utils.eCLAMFigure import eCLAMFigure
 from numpy import arange, sin, pi
 from Utils.Enums import PlotType

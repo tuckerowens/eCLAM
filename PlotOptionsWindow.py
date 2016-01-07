@@ -25,7 +25,6 @@ class PlotOptions(Frame):
         super().__init__(parent)
         self.handler = handler
         self.plotPoint = plotPoint
-        print("Created PlotOptions " + str(self.plotPoint))
         self.init_window(dataset)
 
     def init_window(self):
