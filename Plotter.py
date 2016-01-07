@@ -43,7 +43,7 @@ class Plotter:
 
         return f
 
-    def createSpectra(self, xHighlight=None, yHighlight=None):
+    def createSpectra(self, xHighlight=None, yHighlight=None, contour=False):
 
         f = Figure()
         a = f.add_subplot(111)
@@ -58,6 +58,8 @@ class Plotter:
         a.pcolormesh(X, Y, Z)
         bar = matplotlib.cm.ScalarMappable()
         bar.set_array(Z)
+        if contour:
+            a.contour(X, Y, Z)
         f.colorbar(bar, ax=a)
 
         if xHighlight != None:

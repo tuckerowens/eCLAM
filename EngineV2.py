@@ -118,7 +118,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         addPltFrame.grid_rowconfigure(2, weight=1)
 
         btnSpectra = Button(addPltFrame, text="Spectrogram", command=lambda: self.generatePlot(PlotType.SPECTRA))
-        btnSpectra.grid(sticky=EW, padx=10, columnspan=2)
+        btnSpectra.grid(sticky=EW, padx=5)
+        self.varShowContour = IntVar()
+        chkShowCountour = Checkbutton(addPltFrame, text="Show Contour", variable=self.varShowContour)
+        chkShowCountour.grid(row=0, column=1, padx=5)
 
 
         btnCycle = Button(addPltFrame, text="Cycle", command=lambda: self.generatePlot(PlotType.CYCLE_LINE))
@@ -169,6 +172,9 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
     def selectDataset(self):
         selected = filedialog.askdirectory()
+        if selected == "":
+            self.lblSelectedDir.configure(text="Dataset directory not yet specified")
+            return
         self.lblSelectedDir.configure(text=selected)
         self.dataset = DatasetFactory.buildDataset(selected + '/')
         self.plotter = Plotter.Plotter(self.dataset)
@@ -203,7 +209,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
     def generatePlot(self, type, point=-1):
         if type == PlotType.SPECTRA:
-            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(), type)
+            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0), type)
             self.activePlot = "Spectra"
         elif type == PlotType.VOLTAGE_LINE:
             value =  point if point != -1 else int(self.spnrNumVoltage.get())
@@ -226,12 +232,16 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self._init_window()
 
     def createSpectraWithYHighlight(self, point):
-        self.plots["Spectra highlight " + str(point)] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(yHighlight=point), PlotType.SPECTRA)
+        self.plots["Spectra highlight " + str(point)] = \
+            PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
+                    yHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
         self.activePlot = "Spectra highlight " + str(point)
         self.updateView()
 
     def createSpectraWithXHighlight(self, point):
-        self.plots["Spectra highlight " + str(point)] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(xHighlight=point), PlotType.SPECTRA)
+        self.plots["Spectra highlight " + str(point)] = \
+            PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
+                    xHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
         self.activePlot = "Spectra highlight " + str(point)
         self.updateView()
 
