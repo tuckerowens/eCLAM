@@ -95,3 +95,5 @@ class BackgroundSubtraction(Filter):
         if self.plane == None:
             self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
         return self.plane
+
+

@@ -15,6 +15,7 @@ def buildDataset(directory, filetype=""):
     onlyfiles = os.listdir(directory)
     files = {}
     for f in onlyfiles:
+        if _identify_file(f) == "Unknown": continue
         if _identify_file(f) in files.keys():
             files[_identify_file(f)].append(f)
         else:
