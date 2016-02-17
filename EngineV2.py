@@ -197,6 +197,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             self.plots[self.activePlot].tkraise()
 
     def deletePlot(self, event):
+        # TODO: Make sure this is cross platform
         if event.keycode == 3342463:
             self.plots[self.activePlot].destroy()
             del self.plots[self.activePlot]
