@@ -1,12 +1,12 @@
 #!/usr/local/bin/python3
 
-import matplotlib, DatasetFactory, Plotter, PlotWindow, PlotOptionsWindow
+import matplotlib, DatasetFactory, Plotter, PlotWindow, PlotOptionsWindow, FileSelectionGui
 matplotlib.use('TkAgg')
 
-import Filters
-
-import PIL
-from PIL import ImageTk
+# import Filters
+#
+# import PIL
+# from PIL import ImageTk
 from tkinter import filedialog
 from Utils.Enums import PlotType
 import Filters, inspect
@@ -229,8 +229,11 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
 
     def loadConfig(self):
-        #load file
-        self._init_window()
+        self.fileSelector = FileSelectionGui.FileSelectionGui(self, self)
+        print("Created File Selector")
+
+    def handleFileSelectionResponce(self, fileList):
+        print("Files selected: " + str(fileList))
 
     def createSpectraWithYHighlight(self, point):
         self.plots["Spectra highlight " + str(point)] = \
