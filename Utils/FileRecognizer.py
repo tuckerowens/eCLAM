@@ -1,5 +1,5 @@
 
-import re, xml.etree.ElementTree as ET
+import re, xml.etree.ElementTree as ET, os
 
 
 class FileRecognizer:
@@ -91,7 +91,10 @@ class XmlFileRecognizer(FileRecognizer):
             XmlFileRecognizer.buildRecognizers()
         output = {}
         for recognizer in XmlFileRecognizer.recognizers:
-            output[recognizer] = list(filter(lambda x: recognizer.validFile(x, {}), files))
+            output[recognizer] = []
+            for file in files:
+                if recognizer.validFile(os.path.basename(file), {}):
+                    output[recognizer].append(file)
         return output
 
 
