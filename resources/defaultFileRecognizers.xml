@@ -2,7 +2,7 @@
 <FileRecognizerList>
 
     <FileRecognizer name="CV2">
-        <RegexMatcher>.*CV2.*\.DTA</RegexMatcher>
+        <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV2_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV2_#([0-9]+).DTA</RegexExpression>
             <Element name="Date" group="1"/>
@@ -16,7 +16,7 @@
     </FileRecognizer>
 
     <FileRecognizer name="CV1">
-        <RegexMatcher>.*CV1.*\.DTA</RegexMatcher>
+        <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV1_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV1_#([0-9]+).DTA</RegexExpression>
             <Element name="Date" group="1"/>
@@ -30,7 +30,7 @@
     </FileRecognizer>
 
     <FileRecognizer name="CA2">
-        <RegexMatcher>.*CA2.*\.DTA</RegexMatcher>
+        <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA2_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA2_#([0-9]+).DTA</RegexExpression>
             <Element name="Date" group="1"/>
@@ -44,7 +44,7 @@
     </FileRecognizer>
 
         <FileRecognizer name="CA1">
-        <RegexMatcher>.*CA1.*\.DTA</RegexMatcher>
+        <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA1_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA1_#([0-9]+).DTA</RegexExpression>
             <Element name="Date" group="1"/>

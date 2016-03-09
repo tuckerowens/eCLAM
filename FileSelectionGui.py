@@ -27,6 +27,8 @@ class FileSelectionGui(Toplevel):
         self.menuBar = Menu(top)
         top['menu'] = self.menuBar
 
+        self.fileset = []
+
         self.subMenu = Menu(self.menuBar)
         self.menuBar.add_cascade(label='Configure', menu=self.subMenu)
         self.subMenu.add_command(label='Set Config', command=self.__handleSetConfig)
@@ -73,7 +75,7 @@ class FileSelectionGui(Toplevel):
 
 
     def submit(self):
-        print ("Create dataset")
+        print (list(self.fileset))
 
 
     def directorySelected(self):
@@ -82,9 +84,11 @@ class FileSelectionGui(Toplevel):
             return
         self.selectedDir.configure(text=selected)
         self.fileTypes = {}
+        self.fileset = []
         for dirpath, dirname, filenames in os.walk(selected):
-            temp =  XmlFileRecognizer.recognizeBatch([f for f in filenames],self.configFile)
+            temp =  XmlFileRecognizer.recognizeBatch([os.path.join(dirpath, f) for f in filenames],self.configFile)
             for key in temp.keys():
+                self.fileset = self.fileset +  temp[key]
                 if key in self.fileTypes.keys():
                     self.fileTypes[key] = self.fileTypes[key]+temp[key]
                 else:
@@ -93,34 +97,58 @@ class FileSelectionGui(Toplevel):
         for f in self.fileTypes.keys():
             self.lstFileTypes.insert(END, str(f))
 
-    def fileTypeSelected(self, index):
+
+    def fileTypeSelected(self, index, fileset=None):
         cls = list(self.fileTypes.keys())[self.lstFileTypes.curselection()[0]]
-        print(cls)
-        elements = {}
-        for f in self.fileTypes[cls]:
+        self.elementSet = {}
+        files = self.fileTypes[cls] if fileset == None else fileset
+        self.fileset = self.fileTypes[cls] if fileset == None else fileset
+        for f in files:
             temp = cls.componentExtraction(f)
             for k in temp.keys():
-                if k in elements.keys():
-                    elements[k].add(temp[k])
+                if k in self.elementSet.keys():
+                    self.elementSet[k].add(temp[k])
                 else:
-                    elements[k] = set()
-                    elements[k].add(temp[k])
-        for k in elements.keys():
+                    self.elementSet[k] = set()
+                    self.elementSet[k].add(temp[k])
+
+        for k in self.elementSet.keys():
+            self.elementSet[k] = list(self.elementSet[k])
+            sorted(self.elementSet[k])
+
             if k in self.lstBoxes.keys() or k == 'fileno':
-                print(k + " already built")
+                if k == 'fileno': continue
+                self.lstBoxes[k].delete(0,END)
+                for item in self.elementSet[k]:
+                    self.lstBoxes[k].insert(END, str(item))
+                self.lstBoxes[k].selection_set(0,last=END)
             else:
                 self.frameBoxes[k] = LabelFrame(self.componentFrame, text=k)
                 self.frameBoxes[k].grid(row=int(2+((len(self.frameBoxes.keys())-1)/3)), column=(len(self.frameBoxes.keys())-1)%3, sticky=NSEW)
-                self.lstBoxes[k] = Listbox(self.frameBoxes[k], exportselection=0)
+                self.lstBoxes[k] = Listbox(self.frameBoxes[k], exportselection=0, selectmode=MULTIPLE)
                 self.lstBoxes[k].bind("<<ListboxSelect>>", self.optionSelected)
                 self.lstBoxes[k].grid(sticky=NSEW)
                 self.frameBoxes[k].grid_columnconfigure(0, weight=1)
                 self.frameBoxes[k].grid_rowconfigure(0, weight=1)
-                for item in elements[k]:
+                self.lstBoxes[k].delete(0,END)
+                for item in self.elementSet[k]:
                     self.lstBoxes[k].insert(END, str(item))
-                if len(elements[k]):
-                    self.lstBoxes[k].selection_set(0)
+                if len(self.elementSet[k]) > 1:
+                    self.lstBoxes[k].selection_set(0,last=END)
+                else:
+                    self.lstBoxes[k].selection_clear(0,last=END)
 
     def optionSelected(self, event):
+        query = {}
         for k in self.lstBoxes.keys():
-            print(k + str(self.lstBoxes[k]))
+            box = self.lstBoxes[k]
+            selections = box.curselection()
+            if len(selections) == 0 or len(self.elementSet[k]) < 1: continue
+            query[k] = []
+            for s in selections:
+                query[k].append(self.elementSet[k][s])
+        cls = list(self.fileTypes.keys())[self.lstFileTypes.curselection()[0]]
+        self.fileset = list(filter(lambda x: cls.validFile(x, query), self.fileTypes[cls]))
+        self.fileTypeSelected(0, fileset=self.fileset)
+
+

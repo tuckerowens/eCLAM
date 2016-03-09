@@ -50,8 +50,8 @@ class XmlFileRecognizer(FileRecognizer):
         return self.name
 
     def validFile(self, name, elements):
-        if not self.matchingPattern.match(name): return False;
-        selfElems = self.componentExtraction(name);
+        if not self.matchingPattern.match(os.path.basename(name)): return False;
+        selfElems = self.componentExtraction(os.path.basename(name))
         for k in selfElems.keys():
             if k in elements.keys():
                 if not selfElems[k] in elements[k]:
