@@ -1,7 +1,23 @@
 
+######################################################################
+## Imports
+######################################################################
+
 import os, DatasetCV2
 
+# [CD] Why is this missing a class? Is there a reason you decided to do that?
+
+
+######################################################################
+## DatasetFactory
+######################################################################
+
 def _identify_file(file):
+    """
+
+    :param file:
+    :return:
+    """
     filetypes = [
         "CV2",
         "CV1"
@@ -12,6 +28,12 @@ def _identify_file(file):
     return "Unknown"
 
 def buildDataset(directory, filetype=""):
+    """
+
+    :param directory:
+    :param filetype:
+    :return:
+    """
     onlyfiles = os.listdir(directory)
     files = {}
     for f in onlyfiles:

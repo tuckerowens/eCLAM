@@ -1,23 +1,50 @@
+
+######################################################################
+## Imports
+######################################################################
+
 import matplotlib
 import numpy as np
 from matplotlib.figure import Figure
-from scipy.ndimage.filters import gaussian_filter
-from Utils.eCLAMFigure import eCLAMFigure
-from numpy import arange, sin, pi
-from Utils.Enums import PlotType
-import Dataset
+
+######################################################################
+## Plotter
+######################################################################
 
 class Plotter:
+    """
+    This is the class that handles the plotting.
+    """
 
     def __init__(self, dataset):
+        """
+        Constructor
+
+        :param dataset: The dataset to be plotted
+        :return:
+        """
         self.dataset = dataset
 
     def updateData(self, dataset):
+        """
+
+        :param dataset:
+        :return:
+        """
         self.dataset = dataset
     def getDataset(self):
+        """
+
+        :return:
+        """
         return self.dataset
 
     def createXPointPlot(self, point):
+        """
+
+        :param point:
+        :return:
+        """
         f = Figure()
         a = f.add_subplot(111)
 
@@ -30,6 +57,11 @@ class Plotter:
         return f
 
     def createYPointPlot(self, point):
+        """
+
+        :param point:
+        :return:
+        """
         f = Figure()
         a = f.add_subplot(111)
 
@@ -44,6 +76,13 @@ class Plotter:
         return f
 
     def createSpectra(self, xHighlight=None, yHighlight=None, contour=False):
+        """
+
+        :param xHighlight:
+        :param yHighlight:
+        :param contour:
+        :return:
+        """
 
         f = Figure()
         a = f.add_subplot(111)

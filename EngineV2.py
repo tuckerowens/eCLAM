@@ -1,12 +1,11 @@
 #!/usr/local/bin/python3
+######################################################################
+## Imports
+######################################################################
 
 import matplotlib, DatasetFactory, Plotter, PlotWindow, PlotOptionsWindow, FileSelectionGui
 matplotlib.use('TkAgg')
 
-# import Filters
-#
-# import PIL
-# from PIL import ImageTk
 from tkinter import filedialog
 from Utils.Enums import PlotType
 import Filters, inspect
@@ -17,11 +16,45 @@ if sys.version_info[0] < 3:
 else:
     from tkinter import *
 
-
+######################################################################
+## EngineV2
+######################################################################
 
 class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
-
+    """
+    @field activePlot:
+    @field activePlotOptions:
+    @field backgroundOptions:
+    @field chkVarsFilters:
+    @field dataset:
+    @field deletePlot:
+    @field fileSelector:
+    @field filterOptions:
+    @field filtersChanged:
+    @field generatePlot:
+    @field lblSelectedDir:
+    @field loadConfig:
+    @field lstActivePlots:
+    @field main:
+    @field plotArea:
+    @field plotOptions:
+    @field plots:
+    @field plotter:
+    @field selectDataset:
+    @field sidebar:
+    @field splash:
+    @field spnrNumCycle:
+    @field spnrNumVoltage:
+    @field tk:
+    @field updateActivePlot:
+    @field updateView:
+    @field varShowContour:
+    """
     def __init__(self):
+        """
+        Constructor
+        :return:
+        """
         Tk.__init__(self)
 
         self.wm_title("eCLAM")
@@ -40,6 +73,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
 
     def _init_splash(self):
+        """
+
+        :return:
+        """
         self.splash = Frame(self)
         self.splash.grid(sticky=NSEW)
 
@@ -57,6 +94,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         btnLoad.grid(sticky=NSEW, padx=5)
 
     def _init_window(self):
+        """
+
+        :return:
+        """
         newWindow = Toplevel(self)
         newWindow.wm_title("eCLAM")
         newWindow.wm_geometry("640x480")
@@ -156,6 +197,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
 
     def filtersChanged(self):
+        """
+
+        :return:
+        """
         if self.plotter == None:
             return
         filterStack = self.dataset
@@ -167,10 +212,19 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.updateView()
 
     def updateActivePlot(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         self.activePlot = list(self.plots.keys())[self.lstActivePlots.curselection()[0]]
         self.updateView()
 
     def selectDataset(self):
+        """
+
+        :return:
+        """
         selected = filedialog.askdirectory()
         if selected == "":
             self.lblSelectedDir.configure(text="Dataset directory not yet specified")
@@ -180,6 +234,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.plotter = Plotter.Plotter(self.dataset)
 
     def updateView(self):
+        """
+
+        :return:
+        """
         self.lstActivePlots.delete(0, END)
         for k in self.plots.keys():
             self.lstActivePlots.insert(END, k)
@@ -197,6 +255,11 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             self.plots[self.activePlot].tkraise()
 
     def deletePlot(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         # TODO: Make sure this is cross platform
         if event.keycode == 3342463:
             self.plots[self.activePlot].destroy()
@@ -209,6 +272,12 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
 
     def generatePlot(self, type, point=-1):
+        """
+
+        :param type:
+        :param point:
+        :return:
+        """
         if type == PlotType.SPECTRA:
             self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0), type)
             self.activePlot = "Spectra"
@@ -229,13 +298,27 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
 
     def loadConfig(self):
+        """
+
+        :return:
+        """
         self.fileSelector = FileSelectionGui.FileSelectionGui(self, self)
         print("Created File Selector")
 
     def handleFileSelectionResponce(self, fileList):
+        """
+
+        :param fileList:
+        :return:
+        """
         print("Files selected: " + str(fileList))
 
     def createSpectraWithYHighlight(self, point):
+        """
+
+        :param point:
+        :return:
+        """
         self.plots["Spectra highlight " + str(point)] = \
             PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
                     yHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
@@ -243,6 +326,11 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.updateView()
 
     def createSpectraWithXHighlight(self, point):
+        """
+
+        :param point:
+        :return:
+        """
         self.plots["Spectra highlight " + str(point)] = \
             PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
                     xHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
@@ -250,12 +338,26 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.updateView()
 
     def createXPlot(self, cycle):
+        """
+
+        :param cycle:
+        :return:
+        """
         self.generatePlot(PlotType.CYCLE_LINE, point=cycle)
 
     def createYPlot(self, point):
+        """
+
+        :param point:
+        :return:
+        """
         self.generatePlot(PlotType.VOLTAGE_LINE, point=point)
 
 
+
+######################################################################
+## Main
+######################################################################
 
 if __name__ == "__main__":
     engine = EngineV2()

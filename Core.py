@@ -1,6 +1,10 @@
+
+######################################################################
+## Imports
+######################################################################
+
 import matplotlib, DatasetFactory, Plotter, PlotWindow
 matplotlib.use('TkAgg')
-
 
 from tkinter import filedialog
 import Filters
@@ -13,10 +17,42 @@ if sys.version_info[0] < 3:
 else:
     from tkinter import *
 
-
+######################################################################
+## Core
+######################################################################
 
 class Core(Tk):
+    """
+    @field base:
+    @field browse:
+    @field btnViewCycle:
+    @field btnViewPoint:
+    @field btnViewSpectro:
+    @field chkApplyFilterSet:
+    @field cyclePoint:
+    @field dataset:
+    @field filterSetAppy:
+    @field lastSelectedPlot:
+    @field lineHoriz:
+    @field lineVert:
+    @field plot:
+    @field plotWindow:
+    @field plotter:
+    @field selectedDir:
+    @field sldCyclePoint:
+    @field sldVoltagePoint:
+    @field specra:
+    @field updatePlots:
+    @field voltagePoint:
+    @field wm_title:
+    @field wm_geometry:
+    """
+
     def __init__(self):
+        """
+        Constructor
+        :return:
+        """
         Tk.__init__(self)
 
         self.wm_title("eCLAM")
@@ -32,6 +68,10 @@ class Core(Tk):
 
 
     def _init_window(self):
+        """
+
+        :return:
+        """
 
         self.base = Frame(self)
         self.base.pack(fill=BOTH, expand=1)
@@ -85,6 +125,10 @@ class Core(Tk):
 
 
     def _setDirectory(self):
+        """
+
+        :return:
+        """
         selected = filedialog.askdirectory()
         self.selectedDir.configure(text=selected)
         self.dataset = DatasetFactory.buildDataset(selected + '/')
@@ -93,6 +137,11 @@ class Core(Tk):
 
 
     def updatePlots(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         if self.plotter == None:
             return
         if self.filterSetAppy.get():
@@ -102,11 +151,14 @@ class Core(Tk):
         self.specra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
         self.lineHoriz = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createYPointPlot(self.voltagePoint.get()))
         self.lineVert = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createXPointPlot(self.cyclePoint.get()))
-        self._showPlot(self.lastSelectedPlot)
-
-
+        self.plot = self._showPlot(self.lastSelectedPlot)
 
     def _showPlot(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         self.lastSelectedPlot = event
         if (event == 0):
             self.specra.grid(row=0, column=0)
@@ -121,14 +173,18 @@ class Core(Tk):
             raise Exception("Unknown Event code " +  str(event))
 
     def _plotDataset(self):
+        """
+
+        :return:
+        """
         self.specra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
         self.lineHoriz = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createYPointPlot(self.cyclePoint.get()))
         self.lineVert = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createXPointPlot(self.voltagePoint.get()))
 
 
-
-
-
+######################################################################
+## Main
+######################################################################
 
 app = Core()
 app.mainloop()
