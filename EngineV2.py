@@ -22,6 +22,8 @@ else:
 
 class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     """
+    EngineV2 is the main progam that runs the application.
+
     @field activePlot:
     @field activePlotOptions:
     @field backgroundOptions:

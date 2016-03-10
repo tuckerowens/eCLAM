@@ -40,7 +40,7 @@ class DatasetCV2(Dataset.Dataset):
         """
         Gets the vertical at a point by querying a single cycle to return all (IM) data contained by that cycle.
         :param point:
-        :return:
+        :return: null
         """
         return self.data[point].getAllData()
 

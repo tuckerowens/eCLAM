@@ -23,6 +23,8 @@ else:
 
 class Core(Tk):
     """
+    The core class is a container for the plotting class.
+
     @field base:
     @field browse:
     @field btnViewCycle:
@@ -37,11 +39,11 @@ class Core(Tk):
     @field lineVert:
     @field plot:
     @field plotWindow:
-    @field plotter:
+    @field plotter: reference to plotter that handles plotting
     @field selectedDir:
     @field sldCyclePoint:
     @field sldVoltagePoint:
-    @field specra:
+    @field spectra:
     @field updatePlots:
     @field voltagePoint:
     @field wm_title:
@@ -50,14 +52,15 @@ class Core(Tk):
 
     def __init__(self):
         """
-        Constructor
+        Constructor sets the wm_title and wm_geometry and initiates
+        the main window.
+
         :return:
         """
         Tk.__init__(self)
 
         self.wm_title("eCLAM")
         self.wm_geometry("480x400")
-
 
         self.dataset = None
         self.plotter = None
@@ -69,8 +72,11 @@ class Core(Tk):
 
     def _init_window(self):
         """
+        Init_Window is called by the Core Constructor and initializes
+        the variables needed to display the main window used for
+        displaying plots.
 
-        :return:
+        :return: null
         """
 
         self.base = Frame(self)
@@ -80,8 +86,8 @@ class Core(Tk):
         loadOptions = LabelFrame(self.base, text="Load options")
         loadOptions.pack(fill=X, padx=10, pady=5)
 
-
-        self.selectedDir = Label(loadOptions, text="")
+        self.label = Label(loadOptions, text="")
+        self.selectedDir = self.label
         self.selectedDir.pack(side=LEFT)
 
         self.browse = Button(loadOptions, text="Load Data", command=self._setDirectory)
@@ -148,21 +154,21 @@ class Core(Tk):
             self.plotter.updateData(Filters.BackgroundSubtraction(self.dataset))
         else:
             self.plotter.updateData(self.dataset)
-        self.specra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
+        self.spectra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
         self.lineHoriz = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createYPointPlot(self.voltagePoint.get()))
         self.lineVert = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createXPointPlot(self.cyclePoint.get()))
         self.plot = self._showPlot(self.lastSelectedPlot)
 
     def _showPlot(self, event):
         """
-
+        ShowPlot takes an event as a parameter
         :param event:
         :return:
         """
         self.lastSelectedPlot = event
         if (event == 0):
-            self.specra.grid(row=0, column=0)
-            self.specra.tkraise()
+            self.spectra.grid(row=0, column=0)
+            self.spectra.tkraise()
         elif(event == 1):
             self.lineHoriz.grid(row=0, column=0)
             self.lineHoriz.tkraise()
@@ -174,10 +180,10 @@ class Core(Tk):
 
     def _plotDataset(self):
         """
-
+        PlotDataset plots something
         :return:
         """
-        self.specra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
+        self.spectra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
         self.lineHoriz = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createYPointPlot(self.cyclePoint.get()))
         self.lineVert = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createXPointPlot(self.voltagePoint.get()))
 
