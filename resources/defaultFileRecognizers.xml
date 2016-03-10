@@ -1,60 +1,59 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <FileRecognizerList>
 
     <FileRecognizer name="CV2">
         <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV2_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV2_#([0-9]+).DTA</RegexExpression>
-            <Element name="Date" group="1"/>
-            <Element name="Chem" group="2"/>
-            <Element name="Concentration" group="3"/>
-            <Element name="Trial" group="4"/>
-            <Element name="Scientist" group="5"/>
-            <Element name="IDK" group="6"/>
-            <Element name="fileno" group="7"/>
+            <Element group="1" name="Date" />
+            <Element group="2" name="Chem" />
+            <Element group="3" name="Concentration" />
+            <Element group="4" name="Trial" />
+            <Element group="5" name="Scientist" />
+            <Element group="6" name="IDK" />
+            <Element group="7" name="fileno" />
         </ExtractableElements>
-    </FileRecognizer>
+    <DefaultSelection Chem="[]" Concentration="[]" Date="[]" IDK="[]" Scientist="[]" Trial="[]" /></FileRecognizer>
 
     <FileRecognizer name="CV1">
         <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV1_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV1_#([0-9]+).DTA</RegexExpression>
-            <Element name="Date" group="1"/>
-            <Element name="Chem" group="2"/>
-            <Element name="Concentration" group="3"/>
-            <Element name="Trial" group="4"/>
-            <Element name="Scientist" group="5"/>
-            <Element name="IDK" group="6"/>
-            <Element name="fileno" group="7"/>
+            <Element group="1" name="Date" />
+            <Element group="2" name="Chem" />
+            <Element group="3" name="Concentration" />
+            <Element group="4" name="Trial" />
+            <Element group="5" name="Scientist" />
+            <Element group="6" name="IDK" />
+            <Element group="7" name="fileno" />
         </ExtractableElements>
-    </FileRecognizer>
+    <DefaultSelection Chem="['KRV']" Concentration="[]" Date="['150805']" IDK="['24070']" Scientist="['DA']" Trial="['2', '1']" /></FileRecognizer>
 
     <FileRecognizer name="CA2">
         <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA2_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA2_#([0-9]+).DTA</RegexExpression>
-            <Element name="Date" group="1"/>
-            <Element name="Chem" group="2"/>
-            <Element name="Concentration" group="3"/>
-            <Element name="Trial" group="4"/>
-            <Element name="Scientist" group="5"/>
-            <Element name="IDK" group="6"/>
-            <Element name="fileno" group="7"/>
+            <Element group="1" name="Date" />
+            <Element group="2" name="Chem" />
+            <Element group="3" name="Concentration" />
+            <Element group="4" name="Trial" />
+            <Element group="5" name="Scientist" />
+            <Element group="6" name="IDK" />
+            <Element group="7" name="fileno" />
         </ExtractableElements>
-    </FileRecognizer>
+    <DefaultSelection Chem="['KRV']" Concentration="[]" Date="['150805']" IDK="['24070']" Scientist="['DA']" Trial="[]" /></FileRecognizer>
 
         <FileRecognizer name="CA1">
         <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA1_#([0-9]+).DTA</RegexMatcher>
         <ExtractableElements>
             <RegexExpression>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA1_#([0-9]+).DTA</RegexExpression>
-            <Element name="Date" group="1"/>
-            <Element name="Chem" group="2"/>
-            <Element name="Concentration" group="3"/>
-            <Element name="Trial" group="4"/>
-            <Element name="Scientist" group="5"/>
-            <Element name="IDK" group="6"/>
-            <Element name="fileno" group="7"/>
+            <Element group="1" name="Date" />
+            <Element group="2" name="Chem" />
+            <Element group="3" name="Concentration" />
+            <Element group="4" name="Trial" />
+            <Element group="5" name="Scientist" />
+            <Element group="6" name="IDK" />
+            <Element group="7" name="fileno" />
         </ExtractableElements>
-    </FileRecognizer>
+    <DefaultSelection /></FileRecognizer>
 
 </FileRecognizerList>

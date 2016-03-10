@@ -26,13 +26,20 @@ class XmlFileRecognizer(FileRecognizer):
 
     configFile = ""
     recognizers = []
+    tree = None
 
     def __init__(self, element):
+        self.element = element
         self.name = element.get("name")
         try:
+            self.matchingPatternElem = element.find("RegexMatcher")
             self.matchingPattern = re.compile(element.find("RegexMatcher").text)
         except:
             print("Regex rule to match file name is invalid for recognizer %s" % (self.name))
+            print("Building Blank Matcher")
+            if self.matchingPatternElem == None:
+                self.matchingPatternElem = ET.Element("RegexMatcher")
+                element.insert(self.matchingPatternElem)
             self.matchingPattern = re.compile("")
         elementList = element.find("ExtractableElements")
         try:
@@ -46,32 +53,54 @@ class XmlFileRecognizer(FileRecognizer):
         for eg in elementList.iter("Element"):
             self.elementGroups[eg.get("name")] = eg.get("group")
 
+        self.defaultSelection = element.find("DefaultSelection")
+        if self.defaultSelection == None:
+            print("DefaultSelection Tag not found, generating...")
+            self.defaultSelection = ET.Element("DefaultSelection")
+            element.append(self.defaultSelection)
+
     def __str__(self, *args, **kwargs):
         return self.name
+
+    def updateMatcherRegex(self, regexStr):
+        self.matchingPatternElem.text = regexStr
 
     def validFile(self, name, elements):
         if not self.matchingPattern.match(os.path.basename(name)): return False;
         selfElems = self.componentExtraction(os.path.basename(name))
         for k in selfElems.keys():
             if k in elements.keys():
-                if not selfElems[k] in elements[k]:
-                    return False
+                if not selfElems[k] in elements[k]: return False
         return True
+
+    def setDefaultSelection(self, options):
+        self.defaultSelection.attrib = options
+
+    def getDefaultSelection(self):
+        return self.defaultSelection.attrib
+
+    def getMatcherRegex(self):
+        return self.matchingPatternElem.text
+
 
     def componentExtraction(self, name):
         output = {}
-        result = self.elementPattern.search(name)
+        result = self.elementPattern.search(os.path.basename(name))
         if result == None:
             return output
         for k in self.elementGroups.keys():
             output[k] = result.group(int(self.elementGroups[k]))
         return  output
 
+    @staticmethod
+    def outputToFile(name):
+        XmlFileRecognizer.tree.write(name)
+
 
     @staticmethod
     def buildRecognizers():
-        tree = ET.parse(XmlFileRecognizer.configFile)
-        root = tree.getroot()
+        XmlFileRecognizer.tree = ET.parse(XmlFileRecognizer.configFile)
+        root = XmlFileRecognizer.tree.getroot()
         XmlFileRecognizer.recognizers = []
         for fileRecognizer in root.iter("FileRecognizer"):
             XmlFileRecognizer.recognizers.append(XmlFileRecognizer(fileRecognizer))
