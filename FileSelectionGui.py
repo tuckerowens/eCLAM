@@ -12,8 +12,38 @@ else:
 
 
 class FileSelectionGui(Toplevel):
-
+    """
+    @field componentFrame:
+    @field configFile:
+    @field directorySelected:
+    @field elementSet:
+    @field fileTypeSelected:
+    @field fileTypes:
+    @field fileset:
+    @field frameBoxes:
+    @field grid_columnconfigure:
+    @field grid_rowconfigure:
+    @field handler:
+    @field lstBoxes:
+    @field lstFileTypes:
+    @field main:
+    @field menuBar:
+    @field optionSelected:
+    @field selectedDir:
+    @field subMenu:
+    @field submit:
+    @field winfo_toplevel:
+    @field wm_geometry:
+    @field wm_title:
+    """
     def __init__(self, tk, fileSelectorResponce):
+        """
+        Constructor
+
+        :param tk:
+        :param fileSelectorResponce:
+        :return:
+        """
         Toplevel.__init__(self)
         self.wm_title("Dataset Specification Assistant")
         self.wm_geometry("640x700")
@@ -50,7 +80,6 @@ class FileSelectionGui(Toplevel):
         btnSelectDir.grid(row=0, column=1, sticky=E)
         dirBox.grid_columnconfigure(0, weight=5)
         dirBox.grid_columnconfigure(1, weight=1)
-
 
         fileTypesFrame = LabelFrame(self.main, text="Matching File Types")
         fileTypesFrame.grid(sticky=NSEW, padx=5)
@@ -93,6 +122,10 @@ class FileSelectionGui(Toplevel):
 
 
     def __handleSetConfig(self):
+        """
+
+        :return:
+        """
         selected = filedialog.askopenfilename(filetypes=[("XML File", ".xml")])
         if selected == "":
             return
@@ -147,6 +180,10 @@ class FileSelectionGui(Toplevel):
 
 
     def directorySelected(self):
+        """
+
+        :return:
+        """
         selected = filedialog.askdirectory()
         if selected == "":
             return
@@ -196,6 +233,12 @@ class FileSelectionGui(Toplevel):
         self.lblInfo.config(text="Experiment Count: %i; File Range: %s" % (expCount, countString))
 
     def fileTypeSelected(self, index, fileset=None):
+        """
+
+        :param index:
+        :param fileset:
+        :return:
+        """
         cls = list(self.fileTypes.keys())[self.lstFileTypes.curselection()[0]]
         self.elementSet = {}
         files = self.fileTypes[cls] if fileset == None else fileset
@@ -244,6 +287,11 @@ class FileSelectionGui(Toplevel):
 
 
     def optionSelected(self, event):
+        """
+
+        :param event:
+        :return:
+        """
         query = {}
         for k in self.lstBoxes.keys():
             box = self.lstBoxes[k]
