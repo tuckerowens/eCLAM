@@ -1,3 +1,4 @@
+
 ######################################################################
 ## Imports
 ######################################################################
@@ -17,9 +18,11 @@ class DatasetCV2(Dataset.Dataset):
 
     def __init__(self, directory):
         """
-        :param directory:
-        :return:
+
+        @param directory:
+        @return
         """
+        print("Creating dataset from dir: ", directory)
         files = []
         for file in os.listdir(directory):
             if ".DTA" in file:
@@ -28,39 +31,48 @@ class DatasetCV2(Dataset.Dataset):
         self.data = list(map(lambda x: CycleCV2.CycleCV2(x), files))
 
 
-    def getHorizontalAt(self, point):
+    def getHorizontalAt(self, option, point):
         """
         Gets the horizontal at a point by querying each cycle in data
-        :param point:
-        :return:
+
+        @param option does nothing in datasetCV2
+        @param point:
+        @return
         """
         return list(map(lambda x: x.getDataAtPoint(point), self.data))
 
-    def getVerticalAt(self, point):
+    def getVerticalAt(self, option, point):
         """
         Gets the vertical at a point by querying a single cycle to return all (IM) data contained by that cycle.
-        :param point:
-        :return: null
+
+        @param option does nothing in datasetCV2
+        @param point:
+        @return null
         """
         return self.data[point].getAllData()
 
-    def getPlane(self):
+    def getPlane(self, option):
         """
         Returns a two-dimensional plane by querying each cycle in data to return all (IM) data contained by that cycle.
-        :return:
+
+        @param option does nothing in datasetCV2
+        @return
         """
         return list(map(lambda x: x.getAllData(), self.data))
 
-    def getYUnits(self):
+    def getYUnits(self, option):
         """
 
-        :return:
+        @param option does nothing in datasetCV2
+        @return
         """
         return self.data[0].getVoltages()
 
-    def getXUnits(self):
+    def getXUnits(self, option):
         """
 
-        :return:
+        @param option does nothing in datasetCV2
+        @return
         """
         return range(0, len(self.data))
+

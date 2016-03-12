@@ -28,10 +28,10 @@ class PlotWindow(Frame):
         """
         Constructor
 
-        :param parent:
-        :param figure:
-        :param plotType:
-        :return:
+        @param parent:
+        @param figure:
+        @param plotType:
+        @return
         """
         Frame.__init__(self, parent)
         # a tk.DrawingAre
@@ -49,15 +49,15 @@ class PlotWindow(Frame):
     def getPlotType(self):
         """
 
-        :return:
+        @return
         """
         return self.plotType
 
     def updateFigure(self, figure):
         """
 
-        :param figure:
-        :return:
+        @param figure:
+        @return
         """
 
         self.canvas._tkcanvas.pack_forget()
@@ -75,8 +75,8 @@ class PlotWindow(Frame):
     def on_key_event(self, event):
         """
 
-        :param event:
-        :return:
+        @param event:
+        @return
         """
         print('you pressed %s' % event.key)
         key_press_handler(event, self.canvas, self.toolbar)

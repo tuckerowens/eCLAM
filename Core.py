@@ -9,8 +9,6 @@ matplotlib.use('TkAgg')
 from tkinter import filedialog
 import Filters
 
-from matplotlib.figure import Figure
-
 import sys
 if sys.version_info[0] < 3:
     from Tkinter import *
@@ -25,29 +23,6 @@ class Core(Tk):
     """
     The core class is a container for the plotting class.
 
-    @field base:
-    @field browse:
-    @field btnViewCycle:
-    @field btnViewPoint:
-    @field btnViewSpectro:
-    @field chkApplyFilterSet:
-    @field cyclePoint:
-    @field dataset:
-    @field filterSetAppy:
-    @field lastSelectedPlot:
-    @field lineHoriz:
-    @field lineVert:
-    @field plot:
-    @field plotWindow:
-    @field plotter: reference to plotter that handles plotting
-    @field selectedDir:
-    @field sldCyclePoint:
-    @field sldVoltagePoint:
-    @field spectra:
-    @field updatePlots:
-    @field voltagePoint:
-    @field wm_title:
-    @field wm_geometry:
     """
 
     def __init__(self):
@@ -55,7 +30,7 @@ class Core(Tk):
         Constructor sets the wm_title and wm_geometry and initiates
         the main window.
 
-        :return:
+        @return
         """
         Tk.__init__(self)
 
@@ -76,7 +51,7 @@ class Core(Tk):
         the variables needed to display the main window used for
         displaying plots.
 
-        :return: null
+        @return null
         """
 
         self.base = Frame(self)
@@ -133,7 +108,7 @@ class Core(Tk):
     def _setDirectory(self):
         """
 
-        :return:
+        @return
         """
         selected = filedialog.askdirectory()
         self.selectedDir.configure(text=selected)
@@ -145,8 +120,8 @@ class Core(Tk):
     def updatePlots(self, event):
         """
 
-        :param event:
-        :return:
+        @param event:
+        @return
         """
         if self.plotter == None:
             return
@@ -162,8 +137,8 @@ class Core(Tk):
     def _showPlot(self, event):
         """
         ShowPlot takes an event as a parameter
-        :param event:
-        :return:
+        @param event:
+        @return
         """
         self.lastSelectedPlot = event
         if (event == 0):
@@ -180,13 +155,12 @@ class Core(Tk):
 
     def _plotDataset(self):
         """
-        PlotDataset plots something
-        :return:
+        PlotDataset plots all three graphs from the dataset.
+        @return
         """
         self.spectra = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createSpectra())
         self.lineHoriz = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createYPointPlot(self.cyclePoint.get()))
         self.lineVert = PlotWindow.PlotWindow(self.plotWindow, self.plotter.createXPointPlot(self.voltagePoint.get()))
-
 
 ######################################################################
 ## Main
