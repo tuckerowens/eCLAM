@@ -175,7 +175,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         btnVoltage = Button(addPltFrame, text="Voltage", command=lambda: self.generatePlot(PlotType.VOLTAGE_LINE))
         btnVoltage.grid(sticky=EW, padx=10)
-        self.spnrNumVoltage = Spinbox(addPltFrame, from_=0, to=102, width=5)
+        self.spnrNumVoltage = Spinbox(addPltFrame, from_=0, to=1600, width=5)
+        self.voltageAverage = IntVar()
+        self.chkVoltageGetAverage = Checkbutton(addPltFrame, text="Get Average", variable=self.voltageAverage)
+        self.chkVoltageGetAverage.grid(row=2, column=2, padx=5)
         self.spnrNumVoltage.grid(row=2, column=1, sticky=EW)
 
         self.plotOptions = LabelFrame(self.sidebar, text="Plot Options")
@@ -306,6 +309,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def generatePlot(self, type, point=-1):
         """
 
+        @param option
         @param type:
         @param point:
         @return
@@ -314,9 +318,13 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0), type)
             self.activePlot = "Spectra"
         elif type == PlotType.VOLTAGE_LINE:
-            value =  point if point != -1 else int(self.spnrNumVoltage.get())
+            value = point if point != -1 else int(self.spnrNumVoltage.get())
             self.activePlot = "Voltage - pt" + str(value)
-            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(self.dataset.getSize(), value), type)
+            if self.voltageAverage.get():
+                option = -self.dataset.getSize()
+            else:
+                option = self.dataset.getSize()
+            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(option, value), type)
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())
             self.activePlot = "Cycle - pt" + str(value)

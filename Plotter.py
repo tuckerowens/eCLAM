@@ -47,7 +47,7 @@ class Plotter:
         cyclic voltammogram using voltage as the X-axis variable and
         Current (Im) as the Y-axis variable.
 
-        Called from the core class.
+        Called from the engineV2 class.
 
         @param point: integer value [0,MAX_CYCLE_NUMBER=~120] specifying cycle to use to find the current
         @return null
@@ -75,7 +75,7 @@ class Plotter:
         line graph of current vs cycle with current as the X-axis
         variable and cycle number as the Y-axis variable.
 
-        Called from the core class.
+        Called from the engineV2 class.
 
         @param point: integer value [0,MAX_CYCLE_NUMBER=1600] specifying the point to query in each cycle
         @return null
@@ -83,12 +83,12 @@ class Plotter:
 
         # this is supposed to average all values in the dataset but I have not yet got this one to work
         # will finish up with this later
-
+        print("size: ", size)
         f = Figure()
         a = f.add_subplot(111)
 
         x = np.array(self.dataset.getXUnits(0))
-        y = np.array(self.dataset.getHorizontalAt(-size, point))
+        y = np.array(self.dataset.getHorizontalAt(size, point))
 
         a.set_xlabel("Cycle")
         a.set_ylabel("Current at point %s (Im)" % point)
@@ -110,7 +110,7 @@ class Plotter:
         """
 
         # haven't touched this yet. will likely add new field in gui to cycle through indexes of spectras
-        
+
         f = Figure()
         a = f.add_subplot(111)
 

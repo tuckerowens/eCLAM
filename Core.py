@@ -95,9 +95,11 @@ class Core(Tk):
         self.chkApplyFilterSet.pack(side=LEFT)
 
         self.sldVoltagePoint = Scale(controls, orient=HORIZONTAL, label="Voltage Point", from_=0, to=1600, variable=self.voltagePoint, command=self.updatePlots)
+        self.sldTest1 = Scale(controls, orient=HORIZONTAL, label="test1", from_=0, to=1600, variable=self.test1, command=self.updatePlots)
         self.sldVoltagePoint.pack(side=LEFT, fill=X, pady=5, expand=True)
 
         self.sldCyclePoint = Scale(controls, orient=HORIZONTAL, label="Cycle Number", from_=0, to=102, variable=self.cyclePoint, command=self.updatePlots)
+        self.sldTest2 = Scale(controls, orient=HORIZONTAL, label="test2", from_=0, to=1600, variable=self.test2, command=self.updatePlots)
         self.sldCyclePoint.pack(side=LEFT, fill=X, pady=5, expand=True)
 
 

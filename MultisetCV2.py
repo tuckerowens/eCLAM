@@ -44,7 +44,12 @@ class MultisetCV2(Dataset.Dataset):
 
         # added this to compute average if option was negative
         # abs(option) is the number of datasets in the multi-set
-        # not yet working properly
+
+        # right now the calling class defaults to calling the average
+        # so if you have multiple files, there is currently no way
+        # to specify a single set to look at. This can be changed
+        # by adding an additional button to the gui
+
         print("option:", option)
         if option < 0:
             print("plotting average")
@@ -52,9 +57,10 @@ class MultisetCV2(Dataset.Dataset):
             for i in range(0, len(self.datasets[0].data)):
                 ave_point.append(0)
                 for j in range(0, abs(option)):
-                    ave_point[i] += self.datasets[j].data[i].getDataAtPoint(i)
+                    ave_point[i] += self.datasets[j].data[i].getDataAtPoint(point)
                 ave_point[i] /= abs(option)
             return ave_point
+
         return list(map(lambda x: x.getDataAtPoint(point), self.datasets[0].data))
 
     def getVerticalAt(self, option, point):
