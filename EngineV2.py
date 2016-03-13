@@ -163,23 +163,31 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         btnSpectra = Button(addPltFrame, text="Spectrogram", command=lambda: self.generatePlot(PlotType.SPECTRA))
         btnSpectra.grid(sticky=EW, padx=5)
+
+        # added button to indicate index of multiset to query for spectragram
+        self.spectPlotNum = Spinbox(addPltFrame, from_=0, to=4, width=5)
+        self.spectPlotNum.grid(row=0, column=1, sticky=EW)
+
         self.varShowContour = IntVar()
         chkShowCountour = Checkbutton(addPltFrame, text="Show Contour", variable=self.varShowContour)
-        chkShowCountour.grid(row=0, column=1, padx=5)
+        chkShowCountour.grid(row=0, column=2, padx=5)
 
 
         btnCycle = Button(addPltFrame, text="Cycle", command=lambda: self.generatePlot(PlotType.CYCLE_LINE))
         btnCycle.grid(sticky=EW, padx=10)
+
         self.spnrNumCycle = Spinbox(addPltFrame, from_=0, to=102, width=5)
         self.spnrNumCycle.grid(row=1, column=1, sticky=EW)
 
         btnVoltage = Button(addPltFrame, text="Voltage", command=lambda: self.generatePlot(PlotType.VOLTAGE_LINE))
         btnVoltage.grid(sticky=EW, padx=10)
+
         self.spnrNumVoltage = Spinbox(addPltFrame, from_=0, to=1600, width=5)
+        self.spnrNumVoltage.grid(row=2, column=1, sticky=EW)
+
         self.voltageAverage = IntVar()
         self.chkVoltageGetAverage = Checkbutton(addPltFrame, text="Get Average", variable=self.voltageAverage)
         self.chkVoltageGetAverage.grid(row=2, column=2, padx=5)
-        self.spnrNumVoltage.grid(row=2, column=1, sticky=EW)
 
         self.plotOptions = LabelFrame(self.sidebar, text="Plot Options")
         self.plotOptions.grid(sticky=NSEW)
@@ -315,7 +323,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         @return
         """
         if type == PlotType.SPECTRA:
-            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0), type)
+            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
             self.activePlot = "Spectra"
         elif type == PlotType.VOLTAGE_LINE:
             value = point if point != -1 else int(self.spnrNumVoltage.get())

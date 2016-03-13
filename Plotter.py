@@ -97,7 +97,7 @@ class Plotter:
 
         return f
 
-    def createSpectra(self, xHighlight=None, yHighlight=None, contour=False):
+    def createSpectra(self, xHighlight=None, yHighlight=None, contour=False, index=0):
         """
         Creates a spectragram graph. This function is called from the
         Core class. The spectragram is a three dimensional plot that
@@ -114,12 +114,11 @@ class Plotter:
         f = Figure()
         a = f.add_subplot(111)
 
-        x = np.array(list(self.dataset.getXUnits(0)))
-        y = np.array(range(len(self.dataset.getYUnits(0))))
-
+        x = np.array(list(self.dataset.getXUnits(index)))
+        y = np.array(range(len(self.dataset.getYUnits(index))))
 
         X, Y = np.meshgrid(x, y)
-        Z = np.array(self.dataset.getPlane(0)).transpose()
+        Z = np.array(self.dataset.getPlane(index)).transpose()
 
         a.pcolormesh(X, Y, Z)
         bar = matplotlib.cm.ScalarMappable()
