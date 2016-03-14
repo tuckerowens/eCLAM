@@ -110,7 +110,7 @@ class MinMaxAvgSubtraction(Filter):
         """
         if not point in self.yPoint.keys():
             data = super().getHorizontalAt(option, point)
-            bg = Calculations.findBackgroundByMinMax(self.dataset)
+            bg = Calculations.findBackgroundByMinMax(self.dataset.getIndex(option))
             self.yPoint[point] = list(map(lambda x: x-bg[point], data))
         return self.yPoint[point]
 
@@ -122,7 +122,7 @@ class MinMaxAvgSubtraction(Filter):
         """
         if not point in self.xPoint.keys():
             data = super().getVerticalAt(option, point)
-            bg = Calculations.findBackgroundByMinMax(self.dataset)
+            bg = Calculations.findBackgroundByMinMax(self.dataset.getIndex(option))
             self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
         return self.xPoint[point]
 
@@ -205,7 +205,7 @@ class BackgroundSubtraction(Filter):
         """
         if not point in self.yPoint.keys():
             data = super().getHorizontalAt(option, point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
+            bg = Calculations.findBackgroundByAverage(self.dataset.getIndex(option))
             self.yPoint[point] = list(map(lambda x: x-bg[point], data))
         return self.yPoint[point]
 
@@ -218,7 +218,7 @@ class BackgroundSubtraction(Filter):
         """
         if not point in self.xPoint.keys():
             data = super().getVerticalAt(option, point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
+            bg = Calculations.findBackgroundByAverage(self.dataset.getIndex(option))
             self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
         return  self.xPoint[point]
 

@@ -17,6 +17,14 @@ class Dataset:
         """
         return 1
 
+    def getIndex(self, index):
+        """
+
+        :param index:
+        :return:
+        """
+        return self
+
     # the big change in dataset is that i added option as a parameter to each of these methods
     # this is to allow some flexibility in querying datasets
     # I'm not sure this is the final form i want this to take, but it was a good way to get off

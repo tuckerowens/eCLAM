@@ -101,9 +101,10 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         @return
         """
+
         newWindow = Toplevel(self)
         newWindow.wm_title("eCLAM")
-        newWindow.wm_geometry("640x480")
+        newWindow.wm_geometry("800x600")
         self.main = Frame(newWindow)
         self.main.grid(sticky=NSEW)
         newWindow.grid_rowconfigure(0, weight=1)
@@ -241,7 +242,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def selectDataset(self):
         """
         Initializes the dataset variable using the datasetfactory
-        static (?) method.
+        static method.
 
         @return
         """
@@ -249,7 +250,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         # changing the function of this to allow for input of multiple datasets
         # instead of quitting once a directory is selected, it will continue to
         # prompt the user until they hit cancel
-        # each will be saved into an array and then passed into the multi-set
+        # once cancel is selected, all previous entries will have been saved into
+        # the multiset
 
         selected = ""
         directory_list = []
@@ -269,10 +271,11 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         else:
             self.lblSelectedDir.configure(text=directory_list[0])
 
-        self.dataset = DatasetFactory.buildMultiset()  # directory_list[0] + '/')
+        self.dataset = DatasetFactory.buildMultiset()
         print(directory_list.__len__())
         for i in range(0,directory_list.__len__()):
             self.dataset.addDataset(DatasetFactory.buildDataset(directory_list[i] + '/'))
+            self.dataset.setNames.append(directory_list[i])
         print("Done dataset of size", self.dataset.getSize())
         self.plotter = Plotter.Plotter(self.dataset)
 
@@ -331,7 +334,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             if self.voltageAverage.get():
                 option = -self.dataset.getSize()
             else:
-                option = self.dataset.getSize()
+                option = 0
             self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(option, value), type)
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())

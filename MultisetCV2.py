@@ -22,6 +22,7 @@ class MultisetCV2(Dataset.Dataset):
         """
         self.data = []
         self.datasets = []
+        self.setNames = []
 
     def addDataset(self, dataset):
         self.datasets.append(dataset)
@@ -33,6 +34,14 @@ class MultisetCV2(Dataset.Dataset):
         """
         print("Multiset getsize: ", self.datasets.__len__())
         return self.datasets.__len__()
+
+    def getIndex(self, index):
+        """
+
+        :param index:
+        :return:
+        """
+        return self.datasets[index]
 
     def getHorizontalAt(self, option, point):
         """
@@ -49,8 +58,7 @@ class MultisetCV2(Dataset.Dataset):
         # so if you have multiple files, there is currently no way
         # to specify a single set to look at. This can be changed
         # by adding an additional button to the gui
-
-        print("option:", option)
+        print("GetHorizontalAt: Option =", option)
         if option < 0:
             print("plotting average")
             ave_point = []
@@ -61,7 +69,7 @@ class MultisetCV2(Dataset.Dataset):
                 ave_point[i] /= abs(option)
             return ave_point
 
-        return list(map(lambda x: x.getDataAtPoint(point), self.datasets[0].data))
+        return list(map(lambda x: x.getDataAtPoint(point), self.datasets[option].data))
 
     def getVerticalAt(self, option, point):
         """

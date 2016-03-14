@@ -111,6 +111,7 @@ class Plotter:
 
         # haven't touched this yet. will likely add new field in gui to cycle through indexes of spectras
 
+        print("Plotting spectra at index:", index)
         f = Figure()
         a = f.add_subplot(111)
 
