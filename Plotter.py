@@ -22,93 +22,104 @@ class Plotter:
         """
         Constructor
 
-        :param dataset: The dataset to be plotted
-        :return: null
+        @param dataset: The dataset to be plotted
+        @return null
         """
         self.dataset = dataset
 
     def updateData(self, dataset):
         """
         UpdateData sets the dataset variable to the parameter value.
-        :param dataset:
-        :return: null
+        @param dataset:
+        @return null
         """
         self.dataset = dataset
     def getDataset(self):
         """
         getDataset returns the dataset held by the plotter.
-        :return: the dataset variable held by the plotter.
+        @return the dataset variable held by the plotter.
         """
         return self.dataset
 
-    def createXPointPlot(self, point):
+    def createXPointPlot(self, size, point):
         """
         CreateXPointPlot accepts a point as a parameter and plots a
         cyclic voltammogram using voltage as the X-axis variable and
         Current (Im) as the Y-axis variable.
 
-        Called from the core class.
+        Called from the engineV2 class.
 
-        :param point: integer value [0,MAX_CYCLE_NUMBER=~120] specifying cycle to use to find the current
-        :return: null
+        @param point: integer value [0,MAX_CYCLE_NUMBER=~120] specifying cycle to use to find the current
+        @return null
         """
+
+
+        # changed this to now plot each table located in the dataset side by side
+        # will add function later to display a more accurate legend
         f = Figure()
         a = f.add_subplot(111)
 
-        x = self.dataset.getYUnits()
-        y = self.dataset.getVerticalAt(point)
-        a.set_xlabel("Voltage (V)")
-        a.set_ylabel("Current (Im)")
-        a.plot(x, y)
-
+        for i in range(0,size):
+            print("Plotting index ", i)
+            x = self.dataset.getYUnits(i)
+            y = self.dataset.getVerticalAt(i,point)
+            a.set_xlabel("Voltage (V)")
+            a.set_ylabel("Current (Im)")
+            a.plot(x, y)
+        a.legend("1234", loc='upper left')  # change this later
         return f
 
-    def createYPointPlot(self, point):
+    def createYPointPlot(self, size, point):
         """
         CreateYPointPlot accepts a point as a parameter and plots a
         line graph of current vs cycle with current as the X-axis
         variable and cycle number as the Y-axis variable.
 
-        Called from the core class.
+        Called from the engineV2 class.
 
-        :param point: integer value [0,MAX_CYCLE_NUMBER=1600] specifying the point to query in each cycle
-        :return: null
+        @param point: integer value [0,MAX_CYCLE_NUMBER=1600] specifying the point to query in each cycle
+        @return null
         """
 
+        # this is supposed to average all values in the dataset but I have not yet got this one to work
+        # will finish up with this later
+        print("size: ", size)
         f = Figure()
         a = f.add_subplot(111)
 
-        x = np.array(self.dataset.getXUnits())
-        y = np.array(self.dataset.getHorizontalAt(point))
+        x = np.array(self.dataset.getXUnits(0))
+        y = np.array(self.dataset.getHorizontalAt(size, point))
 
         a.set_xlabel("Cycle")
-        a.set_ylabel("Current at point %s (Im)" % (point))
+        a.set_ylabel("Current at point %s (Im)" % point)
 
         a.plot(x, y)
 
         return f
 
-    def createSpectra(self, xHighlight=None, yHighlight=None, contour=False):
+    def createSpectra(self, xHighlight=None, yHighlight=None, contour=False, index=0):
         """
         Creates a spectragram graph. This function is called from the
         Core class. The spectragram is a three dimensional plot that
         shows current vs cycle vs time.
 
-        :param xHighlight: defaults to none
-        :param yHighlight: defaults to none
-        :param contour: defaults to false
-        :return: null
+        @param xHighlight: defaults to none
+        @param yHighlight: defaults to none
+        @param contour: defaults to false
+        @return null
         """
 
+        # haven't touched this yet. will likely add new field in gui to cycle through indexes of spectras
+
+        print("Plotting spectra at index:", index)
         f = Figure()
         a = f.add_subplot(111)
 
-        x = np.array(list(self.dataset.getXUnits()))
-        y = np.array(range(len(self.dataset.getYUnits())))
-
+        x = np.array(list(self.dataset.getXUnits(index)))
+        y = np.array(range(len(self.dataset.getYUnits(index))))
 
         X, Y = np.meshgrid(x, y)
-        Z = np.array(self.dataset.getPlane()).transpose()
+        Z = np.array(self.dataset.getPlane(index)).transpose()
 
         a.pcolormesh(X, Y, Z)
         bar = matplotlib.cm.ScalarMappable()

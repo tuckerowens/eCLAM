@@ -1,25 +1,53 @@
 
+######################################################################
+## Imports
+######################################################################
+
 import re, xml.etree.ElementTree as ET, os
 
+######################################################################
+## FileRecognizer
+######################################################################
 
 class FileRecognizer:
 
     # This function should be overridden
     def validFile(self, name, elements):
+        """
+
+        @param name
+        @param elements
+        @return
+        """
         return False
 
     # This function should be overridden to
     # extract all the information elements from a file name
     def componentExtraction(self, name):
+        """
+
+        @param name
+        @return
+        """
         return {}
 
     # This needs to be updated when new
     # file recognizers are written
     @staticmethod
     def recognize(filename):
+        """
+        Recognize
+        @param filename
+        @return
+        """
         if FileTypeCV2.validFile(filename):
             return FileTypeCV2
         return None
+
+
+######################################################################
+## Imports
+######################################################################
 
 #This object will take a config file and generate
 class XmlFileRecognizer(FileRecognizer):
@@ -29,6 +57,11 @@ class XmlFileRecognizer(FileRecognizer):
     tree = None
 
     def __init__(self, element):
+        """
+
+        @param element
+        @return
+        """
         self.element = element
         self.name = element.get("name")
         try:
@@ -60,12 +93,29 @@ class XmlFileRecognizer(FileRecognizer):
             element.append(self.defaultSelection)
 
     def __str__(self, *args, **kwargs):
+        """
+        Returns the name
+        @param args
+        @param kwargs
+        @return
+        """
         return self.name
 
     def updateMatcherRegex(self, regexStr):
+        """
+
+        :param regexStr:
+        :return:
+        """
         self.matchingPatternElem.text = regexStr
 
     def validFile(self, name, elements):
+        """
+
+        :param name:
+        :param elements:
+        :return:
+        """
         if not self.matchingPattern.match(os.path.basename(name)): return False;
         selfElems = self.componentExtraction(os.path.basename(name))
         for k in selfElems.keys():
@@ -74,16 +124,34 @@ class XmlFileRecognizer(FileRecognizer):
         return True
 
     def setDefaultSelection(self, options):
+        """
+
+        :param options:
+        :return:
+        """
         self.defaultSelection.attrib = options
 
     def getDefaultSelection(self):
+        """
+
+        :return:
+        """
         return self.defaultSelection.attrib
 
     def getMatcherRegex(self):
+        """
+
+        :return:
+        """
         return self.matchingPatternElem.text
 
 
     def componentExtraction(self, name):
+        """
+
+        :param name:
+        :return:
+        """
         output = {}
         result = self.elementPattern.search(os.path.basename(name))
         if result == None:
@@ -94,11 +162,20 @@ class XmlFileRecognizer(FileRecognizer):
 
     @staticmethod
     def outputToFile(name):
+        """
+
+        :param name:
+        :return:
+        """
         XmlFileRecognizer.tree.write(name)
 
 
     @staticmethod
     def buildRecognizers():
+        """
+
+        :return:
+        """
         XmlFileRecognizer.tree = ET.parse(XmlFileRecognizer.configFile)
         root = XmlFileRecognizer.tree.getroot()
         XmlFileRecognizer.recognizers = []
@@ -107,6 +184,11 @@ class XmlFileRecognizer(FileRecognizer):
 
     @staticmethod
     def findRecognizerByName(name):
+        """
+
+        :param name:
+        :return:
+        """
         options = list(filter(lambda x: str(x) == name, XmlFileRecognizer.recognizers))
         if len(options) > 1:
             print("I'm confused, multiple recognizers have the name " + name)
@@ -115,6 +197,12 @@ class XmlFileRecognizer(FileRecognizer):
 
     @staticmethod
     def recognizeBatch(files, definitionFile):
+        """
+
+        :param files:
+        :param definitionFile:
+        :return:
+        """
         if definitionFile != XmlFileRecognizer.configFile:
             XmlFileRecognizer.configFile = definitionFile
             XmlFileRecognizer.buildRecognizers()
@@ -127,11 +215,19 @@ class XmlFileRecognizer(FileRecognizer):
         return output
 
 
-
+######################################################################
+## FileTypeCV2
+######################################################################
 
 class FileTypeCV2(FileRecognizer):
 
+
     def validFile(name, elements=None):
+        """
+
+        :param elements:
+        :return:
+        """
         if elements == {} or elements == None:
             return "CV2" in name or "DTA" in name
         elems = FileTypeCV2.componentExtraction(name)
@@ -145,6 +241,10 @@ class FileTypeCV2(FileRecognizer):
 
 
     def componentExtraction(name):
+        """
+
+        :return:
+        """
         elems = re.search("([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV2_#([0-9]+).DTA", name)
         output = {}
         output["Date"] = elems.group(1)

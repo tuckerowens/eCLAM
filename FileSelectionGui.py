@@ -40,9 +40,9 @@ class FileSelectionGui(Toplevel):
         """
         Constructor
 
-        :param tk:
-        :param fileSelectorResponce:
-        :return:
+        @param tk:
+        @param fileSelectorResponce:
+        @return
         """
         Toplevel.__init__(self)
         self.wm_title("Dataset Specification Assistant")
@@ -124,7 +124,7 @@ class FileSelectionGui(Toplevel):
     def __handleSetConfig(self):
         """
 
-        :return:
+        @return
         """
         selected = filedialog.askopenfilename(filetypes=[("XML File", ".xml")])
         if selected == "":
@@ -182,7 +182,7 @@ class FileSelectionGui(Toplevel):
     def directorySelected(self):
         """
 
-        :return:
+        @return
         """
         selected = filedialog.askdirectory()
         if selected == "":
@@ -235,9 +235,9 @@ class FileSelectionGui(Toplevel):
     def fileTypeSelected(self, index, fileset=None):
         """
 
-        :param index:
-        :param fileset:
-        :return:
+        @param index:
+        @param fileset:
+        @return
         """
         cls = list(self.fileTypes.keys())[self.lstFileTypes.curselection()[0]]
         self.elementSet = {}
@@ -289,8 +289,8 @@ class FileSelectionGui(Toplevel):
     def optionSelected(self, event):
         """
 
-        :param event:
-        :return:
+        @param event:
+        @return
         """
         query = {}
         for k in self.lstBoxes.keys():

@@ -22,32 +22,32 @@ class PlotOptionInterface():
     def createSpectraWithYHighlight(self, point):
         """
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         raise NotImplementedError()
 
     def createSpectraWithXHighlight(self, point):
         """
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         raise NotImplementedError()
 
     def createXPlot(self, cycle):
         """
 
-        :param cycle:
-        :return:
+        @param cycle:
+        @return
         """
         raise NotImplementedError()
 
     def createYPlot(self, point):
         """
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         raise NotImplementedError()
 
@@ -62,11 +62,11 @@ class PlotOptions(Frame):
     def __init__(self, parent, handler: PlotOptionInterface, dataset, plotPoint=None):
         """
 
-        :param parent:
-        :param handler:
-        :param dataset:
-        :param plotPoint:
-        :return:
+        @param parent:
+        @param handler:
+        @param dataset:
+        @param plotPoint:
+        @return
         """
         super().__init__(parent)
         self.handler = handler
@@ -76,7 +76,7 @@ class PlotOptions(Frame):
     def init_window(self):
         """
 
-        :return:
+        @return
         """
         raise NotImplementedError()
 
@@ -91,8 +91,8 @@ class SpectraPlotOptions(PlotOptions):
     def init_window(self, dataset):
         """
 
-        :param dataset:
-        :return:
+        @param dataset:
+        @return
         """
         btnCreateCycleMax = Button(self, text="Create Cycle from MAX Im",
                                    command=lambda :self.handler.createXPlot(Utils.Calculations.getXAtMaxIm(dataset)))
@@ -121,8 +121,8 @@ class CyclePlotOptions(PlotOptions):
     def init_window(self, dataset):
         """
 
-        :param dataset:
-        :return:
+        @param dataset:
+        @return
         """
         btnViewSpectraMax = Button(self, text="View MAX Im on Spectra",
                                    command=lambda :self.handler.createSpectraWithYHighlight(Utils.Calculations.getYFromMaxImAtX(dataset, self.plotPoint)))
@@ -152,8 +152,8 @@ class VoltagePlotOptions(PlotOptions):
     def init_window(self, dataset):
         """
 
-        :param dataset:
-        :return:
+        @param dataset:
+        @return
         """
         btnViewSpectraMax = Button(self, text="View MAX Im on Spectra",
                                    command=lambda :self.handler.createSpectraWithXHighlight(Utils.Calculations.getXFromMaxImAtY(dataset, self.plotPoint)))
@@ -179,12 +179,12 @@ class VoltagePlotOptions(PlotOptions):
 def createPlotOptionsFromPlotWindow(parent, plotwindow, eventHandler, dataset, plotPoint=None):
     """
 
-    :param parent:
-    :param plotwindow:
-    :param eventHandler:
-    :param dataset:
-    :param plotPoint:
-    :return:
+    @param parent:
+    @param plotwindow:
+    @param eventHandler:
+    @param dataset:
+    @param plotPoint:
+    @return
     """
     if plotwindow.getPlotType() == PlotType.SPECTRA:
         return SpectraPlotOptions(parent, eventHandler, dataset)

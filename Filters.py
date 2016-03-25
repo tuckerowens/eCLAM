@@ -33,8 +33,8 @@ class Filter(Dataset):
         to the param value, plane to none, and xPoint
         and yPoint to empty lists.
 
-        :param dataset:
-        :return:
+        @param dataset:
+        @return
         """
         self.dataset = dataset
         self.plane = None
@@ -44,55 +44,55 @@ class Filter(Dataset):
     def removeFilter(self):
         """
 
-        :return:
+        @return
         """
         return self.dataset
 
     def addFilter(self, filter):
         """
 
-        :param filter:
-        :return:
+        @param filter:
+        @return
         """
         filter.dataset = self.dataset
         self.dataset = filter
 
-    def getHorizontalAt(self, point):
+    def getHorizontalAt(self, option, point):
         """
         Overrides dataset.getHorizontalAt
-        :param point:
-        :return:
+        @param point:
+        @return
         """
-        return self.dataset.getHorizontalAt(point)
+        return self.dataset.getHorizontalAt(0, point)
 
-    def getVerticalAt(self, point):
+    def getVerticalAt(self, option, point):
         """
         Overrides dataset.getVerticalAt
-        :param point:
-        :return:
+        @param point:
+        @return
         """
-        return self.dataset.getVerticalAt(point)
+        return self.dataset.getVerticalAt(0, point)
 
-    def getPlane(self):
+    def getPlane(self, option):
         """
         Overrides dataset.getPlane
-        :return:
+        @return
         """
-        return self.dataset.getPlane()
+        return self.dataset.getPlane(0)
 
-    def getYUnits(self):
+    def getYUnits(self, option):
         """
         Overrides dataset.getYUnits
-        :return:
+        @return
         """
-        return self.dataset.getYUnits()
+        return self.dataset.getYUnits(0)
 
-    def getXUnits(self):
+    def getXUnits(self, option):
         """
         Overrides dataset.getXUnits
-        :return:
+        @return
         """
-        return self.dataset.getXUnits()
+        return self.dataset.getXUnits(0)
 
 ######################################################################
 ## MinMaxAvgSubtraction
@@ -102,38 +102,38 @@ class MinMaxAvgSubtraction(Filter):
     """
 
     """
-    def getHorizontalAt(self, point):
+    def getHorizontalAt(self, option, point):
         """
         Overrides filter.getHorizontalAt
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         if not point in self.yPoint.keys():
-            data = super().getHorizontalAt(point)
-            bg = Calculations.findBackgroundByMinMax(self.dataset)
+            data = super().getHorizontalAt(option, point)
+            bg = Calculations.findBackgroundByMinMax(self.dataset.getIndex(option))
             self.yPoint[point] = list(map(lambda x: x-bg[point], data))
         return self.yPoint[point]
 
-    def getVerticalAt(self, point):
+    def getVerticalAt(self, option, point):
         """
         Overrides filter.getVerticalAt
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         if not point in self.xPoint.keys():
-            data = super().getVerticalAt(point)
-            bg = Calculations.findBackgroundByMinMax(self.dataset)
+            data = super().getVerticalAt(option, point)
+            bg = Calculations.findBackgroundByMinMax(self.dataset.getIndex(option))
             self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
         return self.xPoint[point]
 
-    def getPlane(self):
+    def getPlane(self, option):
         """
         Overrides filter.getPlane
-        :return:
+        @return
         """
 
         if self.plane == None:
-            self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
+            self.plane = [self.getVerticalAt(option, i) for i in range(len(self.dataset.getXUnits(option)))]
         return self.plane
 
 ######################################################################
@@ -148,42 +148,42 @@ class GaussSmooth(Filter):
         """
         Constructor
 
-        :param dataset:
-        :param sigma:
-        :return:
+        @param dataset:
+        @param sigma:
+        @return
         """
         super().__init__(dataset)
         self.sigma = sigma
-    def getHorizontalAt(self, point):
+    def getHorizontalAt(self, option, point):
         """
         Overrides filter.getHorizontalAt
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         if not point in self.yPoint.keys():
-            self.yPoint[point] = gaussian_filter1d(super().getHorizontalAt(point), self.sigma)
+            self.yPoint[point] = gaussian_filter1d(super().getHorizontalAt(option, point), self.sigma)
         return self.yPoint[point]
 
-    def getVerticalAt(self, point):
+    def getVerticalAt(self, option, point):
         """
         Overrides filter.getVerticalAt
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         if not point in self.xPoint.keys():
-            self.xPoint[point] = gaussian_filter1d(super().getVerticalAt(point), self.sigma)
+            self.xPoint[point] = gaussian_filter1d(super().getVerticalAt(option, point), self.sigma)
         return self.xPoint[point]
 
-    def getPlane(self):
+    def getPlane(self, option):
         """
         Overrides filter.getPlane
 
-        :return:
+        @return
         """
         if self.plane == None:
-            self.plane = gaussian_filter(super().getPlane(), self.sigma)
+            self.plane = gaussian_filter(super().getPlane(option), self.sigma)
         return self.plane
 
 
@@ -196,40 +196,40 @@ class BackgroundSubtraction(Filter):
 
     """
 
-    def getHorizontalAt(self, point):
+    def getHorizontalAt(self, option, point):
         """
         Overrides filter.getHorizontalAt
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         if not point in self.yPoint.keys():
-            data = super().getHorizontalAt(point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
+            data = super().getHorizontalAt(option, point)
+            bg = Calculations.findBackgroundByAverage(self.dataset.getIndex(option))
             self.yPoint[point] = list(map(lambda x: x-bg[point], data))
         return self.yPoint[point]
 
-    def getVerticalAt(self, point):
+    def getVerticalAt(self, option, point):
         """
         Overrides filter.getVertical
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         if not point in self.xPoint.keys():
-            data = super().getVerticalAt(point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
+            data = super().getVerticalAt(option, point)
+            bg = Calculations.findBackgroundByAverage(self.dataset.getIndex(option))
             self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
         return  self.xPoint[point]
 
-    def getPlane(self):
+    def getPlane(self, option):
         """
         Overrides filter.getPlane
 
-        :return:
+        @return
         """
         if self.plane == None:
-            self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
+            self.plane = [self.getVerticalAt(option, i) for i in range(len(self.dataset.getXUnits(option)))]
         return self.plane
 
 

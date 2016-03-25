@@ -1,39 +1,45 @@
 
+######################################################################
+## Imports
+######################################################################
+
 import numpy as np
 from Dataset import Dataset
 
 # TODO: Add Support for RMS
 
-
+######################################################################
+## Calculations
+######################################################################
 
 def findBackgroundByAverage(dataset: Dataset, startPoint=0, endPoint=5):
     bg = []
-    for i in range(len(dataset.getYUnits())):
-        bg.append(sum(dataset.getHorizontalAt(i)[startPoint:endPoint]) / (endPoint-startPoint))
+    for i in range(len(dataset.getYUnits(0))):
+        bg.append(sum(dataset.getHorizontalAt(0, i)[startPoint:endPoint]) / (endPoint-startPoint))
     return bg
 
 def findBackgroundByMinMax(dataset: Dataset):
     bg = []
-    for i in range(len(dataset.getYUnits())):
-        bg.append(abs(min(dataset.getHorizontalAt(i)) + max(dataset.getHorizontalAt(i)) / 2.0))
+    for i in range(len(dataset.getYUnits(0))):
+        bg.append(abs(min(dataset.getHorizontalAt(0, i)) + max(dataset.getHorizontalAt(0, i)) / 2.0))
     return bg
 
 def getXFromMinImAtY(dataset: Dataset, point):
-    return list(dataset.getHorizontalAt(point)).index(min(dataset.getHorizontalAt(point)))
+    return list(dataset.getHorizontalAt(0, point)).index(min(dataset.getHorizontalAt(0, point)))
 
 def getXFromMaxImAtY(dataset: Dataset, point):
-    return list(dataset.getHorizontalAt(point)).index(max(dataset.getHorizontalAt(point)))
+    return list(dataset.getHorizontalAt(0, point)).index(max(dataset.getHorizontalAt(0, point)))
 
 
 def getYFromMinImAtX(dataset: Dataset, point):
-    return list(dataset.getVerticalAt(point)).index(min(dataset.getVerticalAt(point)))
+    return list(dataset.getVerticalAt(0, point)).index(min(dataset.getVerticalAt(0, point)))
 
 def getYFromMaxImAtX(dataset: Dataset, point):
-    return list(dataset.getVerticalAt(point)).index(max(dataset.getVerticalAt(point)))
+    return list(dataset.getVerticalAt(0, point)).index(max(dataset.getVerticalAt(0, point)))
 
 
 def getXAtMinIm(dataset: Dataset):
-    data = dataset.getPlane()
+    data = dataset.getPlane(0)
     curMin = data[0][0]
     bestCycle = 0
     for cycle in range(len(data)):
@@ -43,7 +49,7 @@ def getXAtMinIm(dataset: Dataset):
     return bestCycle
 
 def getXAtMaxIm(dataset: Dataset):
-    data = dataset.getPlane()
+    data = dataset.getPlane(0)
     curMin = data[0][0]
     bestCycle = 0
     for cycle in range(len(data)):

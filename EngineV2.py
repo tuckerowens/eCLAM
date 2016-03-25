@@ -23,7 +23,7 @@ else:
 
 class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     """
-    EngineV2 is the main progam that runs the application.
+    EngineV2 is the main program that runs the application.
 
     @field activePlot:
     @field activePlotOptions:
@@ -56,7 +56,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def __init__(self):
         """
         Constructor
-        :return:
+        @return
         """
         Tk.__init__(self)
 
@@ -64,6 +64,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         icon = Image("photo", file="resources/icon.gif")
         self.tk.call("wm", "iconphoto", self._w, icon)
 
+        self.multiset = None
 
         self.dataset = None
         self.plotter = None
@@ -78,7 +79,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def _init_splash(self):
         """
 
-        :return:
+        @return
         """
         self.splash = Frame(self)
         self.splash.grid(sticky=NSEW)
@@ -102,11 +103,12 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def _init_window(self):
         """
 
-        :return:
+        @return
         """
+
         newWindow = Toplevel(self)
         newWindow.wm_title("eCLAM")
-        newWindow.wm_geometry("640x480")
+        newWindow.wm_geometry("800x600")
         self.main = Frame(newWindow)
         self.main.grid(sticky=NSEW)
         newWindow.grid_rowconfigure(0, weight=1)
@@ -166,20 +168,31 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         btnSpectra = Button(addPltFrame, text="Spectrogram", command=lambda: self.generatePlot(PlotType.SPECTRA))
         btnSpectra.grid(sticky=EW, padx=5)
+
+        # added button to indicate index of multiset to query for spectragram
+        self.spectPlotNum = Spinbox(addPltFrame, from_=0, to=4, width=5)
+        self.spectPlotNum.grid(row=0, column=1, sticky=EW)
+
         self.varShowContour = IntVar()
         chkShowCountour = Checkbutton(addPltFrame, text="Show Contour", variable=self.varShowContour)
-        chkShowCountour.grid(row=0, column=1, padx=5)
+        chkShowCountour.grid(row=0, column=2, padx=5)
 
 
         btnCycle = Button(addPltFrame, text="Cycle", command=lambda: self.generatePlot(PlotType.CYCLE_LINE))
         btnCycle.grid(sticky=EW, padx=10)
+
         self.spnrNumCycle = Spinbox(addPltFrame, from_=0, to=102, width=5)
         self.spnrNumCycle.grid(row=1, column=1, sticky=EW)
 
         btnVoltage = Button(addPltFrame, text="Voltage", command=lambda: self.generatePlot(PlotType.VOLTAGE_LINE))
         btnVoltage.grid(sticky=EW, padx=10)
-        self.spnrNumVoltage = Spinbox(addPltFrame, from_=0, to=102, width=5)
+
+        self.spnrNumVoltage = Spinbox(addPltFrame, from_=0, to=1600, width=5)
         self.spnrNumVoltage.grid(row=2, column=1, sticky=EW)
+
+        self.voltageAverage = IntVar()
+        self.chkVoltageGetAverage = Checkbutton(addPltFrame, text="Get Average", variable=self.voltageAverage)
+        self.chkVoltageGetAverage.grid(row=2, column=2, padx=5)
 
         self.plotOptions = LabelFrame(self.sidebar, text="Plot Options")
         self.plotOptions.grid(sticky=NSEW)
@@ -210,7 +223,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def filtersChanged(self):
         """
 
-        :return:
+        @return
         """
         if self.plotter == None:
             return
@@ -225,29 +238,60 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def updateActivePlot(self, event):
         """
 
-        :param event:
-        :return:
+        @param event:
+        @return
         """
         self.activePlot = list(self.plots.keys())[self.lstActivePlots.curselection()[0]]
         self.updateView()
 
+    ###################################################
+    ## SELECT DATASET
+    ###################################################
+
     def selectDataset(self):
         """
+        Initializes the dataset variable using the datasetfactory
+        static method.
 
-        :return:
+        @return
         """
-        selected = filedialog.askdirectory()
-        if selected == "":
+
+        # changing the function of this to allow for input of multiple datasets
+        # instead of quitting once a directory is selected, it will continue to
+        # prompt the user until they hit cancel
+        # once cancel is selected, all previous entries will have been saved into
+        # the multiset
+
+        selected = ""
+        directory_list = []
+        initial_run = True
+        while initial_run == True or selected != "":
+            initial_run = False
+            selected = filedialog.askdirectory()
+            if selected != "":
+                directory_list.append(selected)
+                print("Added dataset")
+
+        if directory_list.__len__() == 0:
             self.lblSelectedDir.configure(text="Dataset directory not yet specified")
             return
-        self.lblSelectedDir.configure(text=selected)
-        self.dataset = DatasetFactory.buildDataset(selected + '/')
+        if directory_list.__len__() > 1:
+            self.lblSelectedDir.configure(text="Multiple Directories selected")
+        else:
+            self.lblSelectedDir.configure(text=directory_list[0])
+
+        self.dataset = DatasetFactory.buildMultiset()
+        print(directory_list.__len__())
+        for i in range(0,directory_list.__len__()):
+            self.dataset.addDataset(DatasetFactory.buildDataset(directory_list[i] + '/'))
+            self.dataset.setNames.append(directory_list[i])
+        print("Done dataset of size", self.dataset.getSize())
         self.plotter = Plotter.Plotter(self.dataset)
 
     def updateView(self):
         """
 
-        :return:
+        @return
         """
         self.lstActivePlots.delete(0, END)
         for k in self.plots.keys():
@@ -268,8 +312,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def deletePlot(self, event):
         """
 
-        :param event:
-        :return:
+        @param event:
+        @return
         """
         # TODO: Make sure this is cross platform
         if event.keycode == 3342463:
@@ -285,21 +329,26 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def generatePlot(self, type, point=-1):
         """
 
-        :param type:
-        :param point:
-        :return:
+        @param option
+        @param type:
+        @param point:
+        @return
         """
         if type == PlotType.SPECTRA:
-            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0), type)
+            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
             self.activePlot = "Spectra"
         elif type == PlotType.VOLTAGE_LINE:
-            value =  point if point != -1 else int(self.spnrNumVoltage.get())
+            value = point if point != -1 else int(self.spnrNumVoltage.get())
             self.activePlot = "Voltage - pt" + str(value)
-            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(value), type)
+            if self.voltageAverage.get():
+                option = -self.dataset.getSize()
+            else:
+                option = 0
+            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(option, value), type)
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())
             self.activePlot = "Cycle - pt" + str(value)
-            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createXPointPlot(value), type)
+            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createXPointPlot(self.dataset.getSize(), value), type)
 
         else:
             raise Exception("Unknown Plot type")
@@ -311,7 +360,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def loadConfig(self):
         """
 
-        :return:
+        @return
         """
         self.fileSelector = FileSelectionGui.FileSelectionGui(self, self)
         print("Created File Selector")
@@ -319,16 +368,16 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def handleFileSelectionResponce(self, fileList):
         """
 
-        :param fileList:
-        :return:
+        @param fileList:
+        @return
         """
         print("Files selected: " + str(fileList))
 
     def createSpectraWithYHighlight(self, point):
         """
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         self.plots["Spectra highlight " + str(point)] = \
             PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
@@ -339,8 +388,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def createSpectraWithXHighlight(self, point):
         """
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         self.plots["Spectra highlight " + str(point)] = \
             PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
@@ -351,16 +400,16 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     def createXPlot(self, cycle):
         """
 
-        :param cycle:
-        :return:
+        @param cycle:
+        @return
         """
         self.generatePlot(PlotType.CYCLE_LINE, point=cycle)
 
     def createYPlot(self, point):
         """
 
-        :param point:
-        :return:
+        @param point:
+        @return
         """
         self.generatePlot(PlotType.VOLTAGE_LINE, point=point)
 

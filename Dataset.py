@@ -10,37 +10,62 @@ class Dataset:
     The reason that an interface is used is so that we can specify different datasets for different types of testing.
     """
 
-    def getHorizontalAt(self, point):
+    def getSize(self):
         """
-        :param point:
+
+        @return size 1
+        """
+        return 1
+
+    def getIndex(self, index):
+        """
+
+        :param index:
         :return:
+        """
+        return self
+
+    # the big change in dataset is that i added option as a parameter to each of these methods
+    # this is to allow some flexibility in querying datasets
+    # I'm not sure this is the final form i want this to take, but it was a good way to get off
+    # the ground and testing the multiset
+
+    def getHorizontalAt(self, option, point):
+        """
+        @param option does nothing in dataset
+        @param point
+        @return
         """
         return NotImplemented
 
-    def getVerticalAt(self, point):
+    def getVerticalAt(self, option, point):
         """
-        :param point:
-        :return:
+        @param option does nothing in dataset
+        @param point
+        @return
         """
         return NotImplemented
 
-    def getPlane(self):
+    def getPlane(self, option):
         """
 
-        :return:
+        @param option does nothing in dataset
+        @return
         """
         return  NotImplemented
 
-    def getYUnits(self):
+    def getYUnits(self, option):
         """
 
-        :return:
+        @param option does nothing in dataset
+        @return
         """
         return NotImplemented
 
-    def getXUnits(self):
+    def getXUnits(self, option):
         """
 
-        :return:
+        @param option does nothing in dataset
+        @return
         """
         return NotImplemented
