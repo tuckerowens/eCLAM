@@ -8,6 +8,7 @@ matplotlib.use('TkAgg')
 
 from tkinter import filedialog
 from Utils.Enums import PlotType
+from Utils import ProjectUpdater
 import Filters, inspect
 
 import sys
@@ -92,8 +93,11 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         btnOpen = Button(self.splash, text="New Dataset", command=self._init_window)
         btnOpen.grid(sticky=NSEW, padx=5)
 
-        btnLoad = Button(self.splash, text="Load Existing eCLAM Config", command=self.loadConfig)
+        btnLoad = Button(self.splash, text="Launch File Selection Tool", command=self.loadConfig)
         btnLoad.grid(sticky=NSEW, padx=5)
+
+        btnUpdate = Button(self.splash, text="Update eCLAM", command=self.update)
+        btnUpdate.grid(sticky=NSEW, padx=5)
 
     def _init_window(self):
         """
@@ -197,6 +201,11 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
                     temp.grid(sticky=NSEW)
 
 
+    def update(self):
+        version = ProjectUpdater.getCurrentVersion()
+        print("Starting Update")
+        version.update()
+        print("Update Complete")
 
     def filtersChanged(self):
         """
