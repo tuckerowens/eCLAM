@@ -2,6 +2,7 @@
 
 import urllib.request as urlreq
 from zipfile import ZipFile
+import os, re, shutil
 
 
 VERSION_FILE = "version.txt"
@@ -30,6 +31,9 @@ class Version:
         with urlreq.urlopen("http://github.com/tuckerowens/eCLAM/archive/master.zip") as f:
             zip.write(f.read())
         zip.close()
-        zip = ZipFile()
-        zip.open("resources/master.zip")
+        zip = ZipFile("resources/master.zip")
         zip.extractall()
+
+        for root, dirs, files in os.walk("eCLAM-master"):
+            for name in files:
+                shutil.move(os.path.join(root, name), './'+re.sub("eCLAM-master", "", os.path.join(root, name)))

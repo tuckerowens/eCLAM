@@ -12,7 +12,7 @@
             <Element group="6" name="IDK" />
             <Element group="7" name="fileno" />
         </ExtractableElements>
-    <DefaultSelection Chem="['KRV']" Concentration="[]" Date="['150805']" IDK="['24070']" Scientist="['DA']" Trial="[]" /></FileRecognizer>
+    <DefaultSelection Chem="['KRV']" Concentration="['100uM', '50uM']" Date="['150805']" IDK="['24070']" Scientist="['DA']" Trial="['1', '4']" /></FileRecognizer>
 
     <FileRecognizer name="CV1">
         <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CV1_#([0-9]+).DTA</RegexMatcher>
@@ -26,7 +26,7 @@
             <Element group="6" name="IDK" />
             <Element group="7" name="fileno" />
         </ExtractableElements>
-    <DefaultSelection Chem="['KRV']" Concentration="[]" Date="['150805']" IDK="['24070']" Scientist="['DA']" Trial="['2', '1']" /></FileRecognizer>
+    <DefaultSelection Chem="['KRV']" Concentration="[]" Date="['150805']" IDK="['24070']" Scientist="['DA']" Trial="['2', '1'] " /></FileRecognizer>
 
     <FileRecognizer name="CA2">
         <RegexMatcher>([0-9]+)\s([A-Z]+)\s([1-9][0-9]+[n|u|m]M)\s([1-9]+)\s([A-F]+)\s([0-9]+)\s+CA2_#([0-9]+).DTA</RegexMatcher>
