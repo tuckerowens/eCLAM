@@ -246,4 +246,44 @@ class BackgroundSubtraction(Filter):
             self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
         return self.plane
 
+class RMSBackground(Filter):
+    """
+
+    """
+
+    def getHorizontalAt(self, point):
+        """
+        Overrides filter.getHorizontalAt
+
+        @param point:
+        @return
+        """
+        if not point in self.yPoint.keys():
+            data = super().getHorizontalAt(point)
+            bg = Calculations.findBackgroundByAverage(self.dataset)
+            self.yPoint[point] = list(map(lambda x: x-bg[point], data))
+        return self.yPoint[point]
+
+    def getVerticalAt(self, point):
+        """
+        Overrides filter.getVertical
+
+        @param point:
+        @return
+        """
+        if not point in self.xPoint.keys():
+            data = super().getVerticalAt(point)
+            bg = Calculations.findBackgroundByAverage(self.dataset)
+            self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
+        return  self.xPoint[point]
+
+    def getPlane(self):
+        """
+        Overrides filter.getPlane
+
+        @return
+        """
+        if self.plane == None:
+            self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
+        return self.plane
 

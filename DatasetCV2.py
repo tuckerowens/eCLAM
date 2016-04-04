@@ -16,18 +16,13 @@ class DatasetCV2(Dataset.Dataset):
     @field data: Data is a list of cycles found in the specified directory
     """
 
-    def __init__(self, directory):
+    def __init__(self, files, info):
         """
 
         @param directory:
         @return
         """
-        print("Creating dataset from dir: ", directory)
-        files = []
-        for file in os.listdir(directory):
-            if ".DTA" in file:
-                files.append(directory + file)
-        files = sorted(files, key=lambda f: int(re.search("(?:#)(.*)(?=\.DTA)", f).group(1)))
+        self.info = info
         self.data = list(map(lambda x: CycleCV2.CycleCV2(x), files))
 
     def getHorizontalAt(self, point):
@@ -67,4 +62,9 @@ class DatasetCV2(Dataset.Dataset):
         @return
         """
         return range(0, len(self.data))
+
+    def __str__(self, *args, **kwargs):
+        return "t%s @ %s" % (self.info["Trial"], self.info["Concentration"])
+
+
 

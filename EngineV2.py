@@ -9,7 +9,7 @@ matplotlib.use('TkAgg')
 from tkinter import filedialog
 from Utils.Enums import PlotType
 from Utils import ProjectUpdater
-import Filters, inspect
+import Filters, inspect, ast
 
 import sys
 if sys.version_info[0] < 3:
@@ -212,7 +212,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
     def update(self):
         version = ProjectUpdater.getCurrentVersion()
-        print("Starting Update")
         version.update()
         print("Update Complete")
 
@@ -257,31 +256,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         # prompt the user until they hit cancel
         # once cancel is selected, all previous entries will have been saved into
         # the multiset
+        self.fileSelector = FileSelectionGui.FileSelectionGui(self, self)
 
-        selected = ""
-        directory_list = []
-        initial_run = True
-        while initial_run or selected != "":
-            initial_run = False
-            selected = filedialog.askdirectory()
-            if selected != "":
-                directory_list.append(selected)
-                print("Added dataset")
-
-        if directory_list.__len__() == 0:
-            self.lblSelectedDir.configure(text="Dataset directory not yet specified")
-            return
-        if directory_list.__len__() > 1:
-            self.lblSelectedDir.configure(text="Multiple Directories selected")
-        else:
-            self.lblSelectedDir.configure(text=directory_list[0])
-
-        self.dataset = DatasetFactory.buildMultiset()
-        print(directory_list.__len__())
-        for i in range(0,directory_list.__len__()):
-            self.dataset.addDataset(DatasetFactory.buildDataset(directory_list[i] + '/'))
-        print("Done dataset of size", self.dataset.getSize())
-        self.plotter = Plotter.Plotter(self.dataset)
 
     def updateView(self):
         """
@@ -360,13 +336,27 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.fileSelector = FileSelectionGui.FileSelectionGui(self, self)
         print("Created File Selector")
 
-    def handleFileSelectionResponce(self, fileList):
+    def handleFileSelectionResponce(self, fileList, recognizer):
         """
 
         @param fileList:
         @return
         """
-        print("Files selected: " + str(fileList))
+
+        if len(fileList) == 0:
+            self.lblSelectedDir.configure(text="Dataset directory not yet specified")
+            return
+        if len(fileList) > 1:
+            self.lblSelectedDir.configure(text="Multiple Directories selected")
+        else:
+            self.lblSelectedDir.configure(text="Single Dataset Selected")
+
+        self.dataset = DatasetFactory.buildMultiset()
+
+        for i in fileList.keys():
+            self.dataset.addDataset(DatasetFactory.buildDataset(fileList[i], ast.literal_eval(i)))
+        print("Done dataset of size", self.dataset.getSize())
+        self.plotter = Plotter.Plotter(self.dataset)
 
     def createSpectraWithYHighlight(self, point):
         """

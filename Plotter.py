@@ -58,15 +58,17 @@ class Plotter:
         f = Figure()
         a = f.add_subplot(111)
         tmp_index = self.dataset.getCurrentIndex()
+        legend = []
         for i in range(0, self.dataset.getSize()):
             print("Plotting index ", i )
+            legend.append(str(self.dataset))
             x = self.dataset.getYUnits()
             y = self.dataset.getVerticalAt(point)
             a.set_xlabel("Voltage (V)")
             a.set_ylabel("Current (Im)")
             a.plot(x, y)
             self.dataset.setCurrentIndex((self.dataset.getCurrentIndex() + 1) % self.dataset.getSize())
-        a.legend("ABCD", loc='upper left')  # change this later to reflect cycle numbers or something relevant
+        a.legend(legend, loc='upper left')  # change this later to reflect cycle numbers or something relevant
         self.dataset.setCurrentIndex(tmp_index)
 
         return f
