@@ -74,3 +74,6 @@ class Dataset:
 
     def getCurrentIndex(self):
         return self.currentIndex
+
+    def setAverageDataset(self, enable):
+        pass

@@ -3,7 +3,7 @@
 ## Imports
 ######################################################################
 
-import os, DatasetCV2,Multiset, MultisetCV2
+import os, DatasetCV2, Multiset, MultisetCV2
 
 ######################################################################
 ## DatasetFactory

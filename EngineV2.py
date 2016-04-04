@@ -186,7 +186,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.spnrNumVoltage = Spinbox(addPltFrame, from_=0, to=1600, width=5)
         self.spnrNumVoltage.grid(row=2, column=1, sticky=EW)
 
-        self.voltageAverage = IntVar()
+        self.voltageAverage = BooleanVar()
         self.chkVoltageGetAverage = Checkbutton(addPltFrame, text="Get Average", variable=self.voltageAverage)
         self.chkVoltageGetAverage.grid(row=2, column=2, padx=5)
 
@@ -261,7 +261,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         selected = ""
         directory_list = []
         initial_run = True
-        while initial_run == True or selected != "":
+        while initial_run or selected != "":
             initial_run = False
             selected = filedialog.askdirectory()
             if selected != "":
@@ -329,13 +329,18 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         """
 
         if type == PlotType.SPECTRA:
+            self.dataset.setCurrentIndex(int(self.spectPlotNum.get()))
             self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
             self.activePlot = "Spectra"
 
         elif type == PlotType.VOLTAGE_LINE:
+            self.dataset.setAverageDataset(bool(self.voltageAverage.get()))
+
             value = point if point != -1 else int(self.spnrNumVoltage.get())
             self.activePlot = "Voltage - pt" + str(value)
             self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(value), type)
+
+            self.dataset.setAverageDataset(False)
 
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())

@@ -26,12 +26,15 @@ class Multiset(Dataset.Dataset):
     def addDataset(self, dataset):
         self.datasets.append(dataset)
 
+        # initialize the average dataset cache
         if self.average == "":
             self.average = AverageDataset.AverageDataset(len(dataset.data), len(dataset.data[0].table), len(dataset.data[0].table[0]))
 
+        # initialize the currentDataset pointer a dataset
         if self.currentDataset == "":
             self.currentDataset = self.datasets[self.getSize() - 1]
 
+        # recalculate average based on new dataset addition
         for c in range(0, len(self.datasets[0].data)):
             for x in range(0, len(self.datasets[0].data[self.getSize() - 1].table)):
                 for y in range(0, len(self.datasets[0].data[self.getSize() - 1].table[0])):
@@ -46,6 +49,8 @@ class Multiset(Dataset.Dataset):
         """
         :return:
         """
+        if self.currentDataset == self.average:
+            return 1
         return len(self.datasets)
 
     def getHorizontalAt(self, point):
@@ -90,11 +95,13 @@ class Multiset(Dataset.Dataset):
         :return:
         """
         self.currentIndex = index
+        self.currentDataset = self.datasets[index]
 
     def getCurrentIndex(self):
         return self.currentIndex
 
     def setAverageDataset(self, enable):
+        print("Enable average:", enable)
         if enable == True:
             self.currentDataset = self.average
         else:
