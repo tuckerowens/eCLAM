@@ -3,7 +3,7 @@
 ## Imports
 ######################################################################
 
-import os, DatasetCV2, MultisetCV2
+import os, DatasetCV2,Multiset, MultisetCV2
 
 ######################################################################
 ## DatasetFactory
@@ -67,8 +67,7 @@ def buildMultiset(filetype=""):
     @param filetype:
     @return
     """
-    multiset = MultisetCV2.MultisetCV2()
-    #multiset.addDataset(buildDataset(directory))
+    multiset = Multiset.Multiset()
     return multiset
 
 

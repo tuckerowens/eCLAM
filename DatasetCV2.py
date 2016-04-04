@@ -30,48 +30,40 @@ class DatasetCV2(Dataset.Dataset):
         files = sorted(files, key=lambda f: int(re.search("(?:#)(.*)(?=\.DTA)", f).group(1)))
         self.data = list(map(lambda x: CycleCV2.CycleCV2(x), files))
 
-
-    def getHorizontalAt(self, option, point):
+    def getHorizontalAt(self, point):
         """
         Gets the horizontal at a point by querying each cycle in data
-
-        @param option does nothing in datasetCV2
         @param point:
         @return
         """
         return list(map(lambda x: x.getDataAtPoint(point), self.data))
 
-    def getVerticalAt(self, option, point):
+    def getVerticalAt(self, point):
         """
         Gets the vertical at a point by querying a single cycle to return all (IM) data contained by that cycle.
 
-        @param option does nothing in datasetCV2
         @param point:
         @return null
         """
         return self.data[point].getAllData()
 
-    def getPlane(self, option):
+    def getPlane(self):
         """
         Returns a two-dimensional plane by querying each cycle in data to return all (IM) data contained by that cycle.
 
-        @param option does nothing in datasetCV2
         @return
         """
         return list(map(lambda x: x.getAllData(), self.data))
 
-    def getYUnits(self, option):
+    def getYUnits(self):
         """
 
-        @param option does nothing in datasetCV2
         @return
         """
         return self.data[0].getVoltages()
 
-    def getXUnits(self, option):
+    def getXUnits(self):
         """
-
-        @param option does nothing in datasetCV2
         @return
         """
         return range(0, len(self.data))

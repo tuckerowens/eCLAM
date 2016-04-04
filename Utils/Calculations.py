@@ -14,8 +14,8 @@ from Dataset import Dataset
 
 def findBackgroundByAverage(dataset: Dataset, startPoint=0, endPoint=5):
     bg = []
-    for i in range(len(dataset.getYUnits(0))):
-        bg.append(sum(dataset.getHorizontalAt(0, i)[startPoint:endPoint]) / (endPoint-startPoint))
+    for i in range(len(dataset.getYUnits())):
+        bg.append(sum(dataset.getHorizontalAt(i)[startPoint:endPoint]) / (endPoint-startPoint))
     return bg
 
 def findBackgroundByMinMax(dataset: Dataset):

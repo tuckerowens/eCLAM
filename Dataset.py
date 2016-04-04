@@ -25,12 +25,14 @@ class Dataset:
         """
         return self
 
-    # the big change in dataset is that i added option as a parameter to each of these methods
-    # this is to allow some flexibility in querying datasets
-    # I'm not sure this is the final form i want this to take, but it was a good way to get off
-    # the ground and testing the multiset
+    def getHorizontalAt(self, point):
+        """
+        @param point
+        @return
+        """
+        return NotImplemented
 
-    def getHorizontalAt(self, option, point):
+    def getVerticalAt(self, point):
         """
         @param option does nothing in dataset
         @param point
@@ -38,15 +40,7 @@ class Dataset:
         """
         return NotImplemented
 
-    def getVerticalAt(self, option, point):
-        """
-        @param option does nothing in dataset
-        @param point
-        @return
-        """
-        return NotImplemented
-
-    def getPlane(self, option):
+    def getPlane(self):
         """
 
         @param option does nothing in dataset
@@ -54,7 +48,7 @@ class Dataset:
         """
         return  NotImplemented
 
-    def getYUnits(self, option):
+    def getYUnits(self):
         """
 
         @param option does nothing in dataset
@@ -62,10 +56,21 @@ class Dataset:
         """
         return NotImplemented
 
-    def getXUnits(self, option):
+    def getXUnits(self):
         """
 
         @param option does nothing in dataset
         @return
         """
         return NotImplemented
+
+    def setCurrentIndex(self, index):
+        """
+
+        :param index:
+        :return:
+        """
+        self.currentIndex = 0
+
+    def getCurrentIndex(self):
+        return self.currentIndex

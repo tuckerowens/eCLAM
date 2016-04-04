@@ -41,7 +41,7 @@ class Plotter:
         """
         return self.dataset
 
-    def createXPointPlot(self, size, point):
+    def createXPointPlot(self, point):
         """
         CreateXPointPlot accepts a point as a parameter and plots a
         cyclic voltammogram using voltage as the X-axis variable and
@@ -53,23 +53,25 @@ class Plotter:
         @return null
         """
 
-
         # changed this to now plot each table located in the dataset side by side
         # will add function later to display a more accurate legend
         f = Figure()
         a = f.add_subplot(111)
-
-        for i in range(0,size):
+        tmp_index = self.dataset.getCurrentIndex()
+        for i in range(0, self.dataset.getSize()):
             print("Plotting index ", i)
-            x = self.dataset.getYUnits(i)
-            y = self.dataset.getVerticalAt(i,point)
+            x = self.dataset.getYUnits()
+            y = self.dataset.getVerticalAt(point)
             a.set_xlabel("Voltage (V)")
             a.set_ylabel("Current (Im)")
             a.plot(x, y)
-        a.legend("1234", loc='upper left')  # change this later
+            self.dataset.setCurrentIndex(self.dataset.getCurrentIndex() + 1)
+        a.legend("ABCD", loc='upper left')  # change this later to reflect cycle numbers or something relevant
+        self.dataset.setCurrentIndex(tmp_index)
+
         return f
 
-    def createYPointPlot(self, size, point):
+    def createYPointPlot(self, point):
         """
         CreateYPointPlot accepts a point as a parameter and plots a
         line graph of current vs cycle with current as the X-axis
@@ -81,14 +83,12 @@ class Plotter:
         @return null
         """
 
-        # this is supposed to average all values in the dataset but I have not yet got this one to work
-        # will finish up with this later
-        print("size: ", size)
+        print("size: ", self.dataset.getSize())
         f = Figure()
         a = f.add_subplot(111)
 
-        x = np.array(self.dataset.getXUnits(0))
-        y = np.array(self.dataset.getHorizontalAt(size, point))
+        x = np.array(self.dataset.getXUnits())
+        y = np.array(self.dataset.getHorizontalAt(point))
 
         a.set_xlabel("Cycle")
         a.set_ylabel("Current at point %s (Im)" % point)
@@ -115,11 +115,11 @@ class Plotter:
         f = Figure()
         a = f.add_subplot(111)
 
-        x = np.array(list(self.dataset.getXUnits(index)))
-        y = np.array(range(len(self.dataset.getYUnits(index))))
+        x = np.array(list(self.dataset.getXUnits()))
+        y = np.array(range(len(self.dataset.getYUnits())))
 
         X, Y = np.meshgrid(x, y)
-        Z = np.array(self.dataset.getPlane(index)).transpose()
+        Z = np.array(self.dataset.getPlane()).transpose()
 
         a.pcolormesh(X, Y, Z)
         bar = matplotlib.cm.ScalarMappable()
@@ -138,6 +138,3 @@ class Plotter:
 
         a.axis([X.min(), X.max(), Y.min(), Y.max()])
         return f
-
-
-

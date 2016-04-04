@@ -75,7 +75,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self._init_splash()
         self.splash.lift()
 
-
     def _init_splash(self):
         """
 
@@ -84,10 +83,9 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.splash = Frame(self)
         self.splash.grid(sticky=NSEW)
 
-
         # using GIF because PhotoImage doesn't support anything good
         photo = PhotoImage(file="resources/splash.gif")
-        lblImg = Label(self.splash, compound = CENTER, text="", image=photo)
+        lblImg = Label(self.splash, compound=CENTER, text="", image=photo)
         lblImg.image = photo
         lblImg.grid(sticky=NSEW, pady=5)
 
@@ -134,7 +132,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         self.main.grid_rowconfigure(1, weight=5)
 
-
         self.sidebar = Frame(lowerSection)
         self.sidebar.grid(sticky=NSEW)
 
@@ -177,7 +174,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         chkShowCountour = Checkbutton(addPltFrame, text="Show Contour", variable=self.varShowContour)
         chkShowCountour.grid(row=0, column=2, padx=5)
 
-
         btnCycle = Button(addPltFrame, text="Cycle", command=lambda: self.generatePlot(PlotType.CYCLE_LINE))
         btnCycle.grid(sticky=EW, padx=10)
 
@@ -203,6 +199,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         self.chkVarsFilters = {}
         self.filterOptions = {}
+
         for name, obj in inspect.getmembers(sys.modules[Filters.BackgroundSubtraction.__module__]):
             if inspect.isclass(obj) and issubclass(obj, Filters.Filter):
                 if name != "Filter":
@@ -212,7 +209,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
                     # print(args)
                     temp = Checkbutton(self.backgroundOptions, text=name, variable=self.chkVarsFilters[name], command=self.filtersChanged)
                     temp.grid(sticky=NSEW)
-
 
     def update(self):
         version = ProjectUpdater.getCurrentVersion()
@@ -284,7 +280,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         print(directory_list.__len__())
         for i in range(0,directory_list.__len__()):
             self.dataset.addDataset(DatasetFactory.buildDataset(directory_list[i] + '/'))
-            self.dataset.setNames.append(directory_list[i])
         print("Done dataset of size", self.dataset.getSize())
         self.plotter = Plotter.Plotter(self.dataset)
 
@@ -325,37 +320,32 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
                 self.activePlot = None
             self.updateView()
 
-
     def generatePlot(self, type, point=-1):
         """
-
-        @param option
+        @param option:
         @param type:
         @param point:
         @return
         """
+
         if type == PlotType.SPECTRA:
             self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
             self.activePlot = "Spectra"
+
         elif type == PlotType.VOLTAGE_LINE:
             value = point if point != -1 else int(self.spnrNumVoltage.get())
             self.activePlot = "Voltage - pt" + str(value)
-            if self.voltageAverage.get():
-                option = -self.dataset.getSize()
-            else:
-                option = 0
-            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(option, value), type)
+            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(value), type)
+
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())
             self.activePlot = "Cycle - pt" + str(value)
-            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createXPointPlot(self.dataset.getSize(), value), type)
+            self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createXPointPlot(value), type)
 
         else:
             raise Exception("Unknown Plot type")
+
         self.updateView()
-
-
-
 
     def loadConfig(self):
         """
