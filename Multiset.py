@@ -106,3 +106,8 @@ class Multiset(Dataset.Dataset):
             self.currentDataset = self.average
         else:
             self.currentDataset = self.datasets[self.currentIndex]
+
+    def __str__(self, *args, **kwargs):
+        return str(self.currentDataset)
+
+

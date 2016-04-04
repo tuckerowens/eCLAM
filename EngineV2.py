@@ -92,9 +92,6 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         btnOpen = Button(self.splash, text="New Dataset", command=self._init_window)
         btnOpen.grid(sticky=NSEW, padx=5)
 
-        btnLoad = Button(self.splash, text="Launch File Selection Tool", command=self.loadConfig)
-        btnLoad.grid(sticky=NSEW, padx=5)
-
         btnUpdate = Button(self.splash, text="Update eCLAM", command=self.update)
         btnUpdate.grid(sticky=NSEW, padx=5)
 
@@ -306,8 +303,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         if type == PlotType.SPECTRA:
             self.dataset.setCurrentIndex(int(self.spectPlotNum.get()))
-            self.plots["Spectra"] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
-            self.activePlot = "Spectra"
+            self.plots["Spectra " + str(self.dataset.currentDataset)] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
+            self.activePlot = "Spectra " + str(self.dataset.currentDataset)
 
         elif type == PlotType.VOLTAGE_LINE:
             self.dataset.setAverageDataset(bool(self.voltageAverage.get()))
@@ -347,14 +344,14 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             self.lblSelectedDir.configure(text="Dataset directory not yet specified")
             return
         if len(fileList) > 1:
-            self.lblSelectedDir.configure(text="Multiple Directories selected")
+            self.lblSelectedDir.configure(text="Multiple Directories selected - data is of type %s" % (str(recognizer)))
         else:
-            self.lblSelectedDir.configure(text="Single Dataset Selected")
+            self.lblSelectedDir.configure(text="Single Dataset Selected - data is of type %s" % (str(recognizer)))
 
         self.dataset = DatasetFactory.buildMultiset()
 
         for i in fileList.keys():
-            self.dataset.addDataset(DatasetFactory.buildDataset(fileList[i], ast.literal_eval(i)))
+            self.dataset.addDataset(DatasetFactory.buildDataset(fileList[i], ast.literal_eval(i), hint=recognizer))
         print("Done dataset of size", self.dataset.getSize())
         self.plotter = Plotter.Plotter(self.dataset)
 

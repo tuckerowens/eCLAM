@@ -105,6 +105,8 @@ class Filter(Dataset):
     def getCurrentIndex(self):
         return self.dataset.getCurrentIndex()
 
+    def __str__(self, *args, **kwargs):
+        return str(self.dataset)
 
 
 ######################################################################

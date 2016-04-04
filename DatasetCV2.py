@@ -64,7 +64,7 @@ class DatasetCV2(Dataset.Dataset):
         return range(0, len(self.data))
 
     def __str__(self, *args, **kwargs):
-        return "t%s @ %s" % (self.info["Trial"], self.info["Concentration"])
+        return "t%s @ %s" % (self.info["Trial"][0], self.info["Concentration"][0])
 
 
 

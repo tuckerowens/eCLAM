@@ -177,7 +177,7 @@ class FileSelectionGui(Toplevel):
         for k in results:
             results[k] = list(sorted(results[k], key=lambda x: int(cls.componentExtraction(x)['fileno'])))
 
-        self.handler.handleFileSelectionResponce(results, recognizer=list(self.fileTypes.keys())[self.lstFileTypes.curselection()[0]])
+        self.handler.handleFileSelectionResponce(results, list(self.fileTypes.keys())[self.lstFileTypes.curselection()[0]])
         self.destroy()
 
 

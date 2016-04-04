@@ -24,16 +24,16 @@ def _identify_file(file):
             return t
     return "Unknown"
 
-def buildDataset(files, info):
+def buildDataset(files, info, hint):
     """
 
     @param directory:
     @param filetype:
     @return
     """
-    print(info)
 
-    if info["recognizer"] == "CV2":
+
+    if str(hint) == "CV2":
         return DatasetCV2.DatasetCV2(files, info=info)
     elif info["recognizer"] == "Unknown":
         raise Exception("Unknown file type")

@@ -85,17 +85,28 @@ class Plotter:
         @return null
         """
 
-        print("size: ", self.dataset.getSize())
+
         f = Figure()
         a = f.add_subplot(111)
 
-        x = np.array(self.dataset.getXUnits())
-        y = np.array(self.dataset.getHorizontalAt(point))
+        tmp_index = self.dataset.getCurrentIndex()
+        legend = []
+        for i in range(0, self.dataset.getSize()):
+            print("Plotting index ", i )
+            legend.append(str(self.dataset))
+            x = np.array(self.dataset.getXUnits())
+            y = np.array(self.dataset.getHorizontalAt(point))
+            a.set_xlabel("Voltage (V)")
+            a.set_ylabel("Current (Im)")
+            a.plot(x, y)
+            self.dataset.setCurrentIndex((self.dataset.getCurrentIndex() + 1) % self.dataset.getSize())
+        a.legend(legend, loc='upper left')  # change this later to reflect cycle numbers or something relevant
+        self.dataset.setCurrentIndex(tmp_index)
 
         a.set_xlabel("Cycle")
         a.set_ylabel("Current at point %s (Im)" % point)
 
-        a.plot(x, y)
+
 
         return f
 
