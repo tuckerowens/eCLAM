@@ -194,8 +194,9 @@ class BackgroundSubtraction(Filter):
         """
         if not point in self.xPoint.keys():
             data = super().getVerticalAt(point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
-            self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
+            if not 'bg' in vars(self):
+                self.bg = Calculations.findBackgroundByAverage(self.dataset)
+            self.xPoint[point] = [data[i] - self.bg[i] for i in range(len(data))]
         return  self.xPoint[point]
 
     def getPlane(self):
@@ -205,7 +206,10 @@ class BackgroundSubtraction(Filter):
         @return
         """
         if self.plane == None:
+            print("Building Background Substarction")
+            start = time.time()
             self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
+            print("Build time: %fs" % (time.time() - start))
         return self.plane
 
 class SNR_Evaluation(Filter):
@@ -237,7 +241,9 @@ class RMS_Evaluation(Filter):
     def __init__(self, dataset):
         start = time.time()
         super().__init__(dataset)
-        self.data = np.array([Calculations.getRMSFromY(self.dataset, i) for i in range(len(self.dataset.getVerticalAt(0)))]).transpose()
+        print("Building RMS Eval -- ")
+        rang = range(len(self.dataset.getVerticalAt(0)))
+        self.data = np.array([Calculations.getRMSFromY(self.dataset, i) for i in rang]).transpose()
         print("RMS_Evaluation build in %f" % (time.time() - start))
 
     def getHorizontalAt(self, point):

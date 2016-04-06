@@ -60,21 +60,21 @@ class CycleCV2:
         Gets all of the data contained in the table.
         @return The entire IM data contained by the cycle
         """
-        return list(map(lambda x: float(x[4]), self.table))
+        return [float(x[4]) for x in self.table]
 
     def getVoltages(self):
         """
         Gets all of the voltages contained in the cycle.
         @return List of voltages associated with each point in the cycle
         """
-        return list(map(lambda x: float(x[3]), self.table))
+        return [float(x[3]) for x in self.table]
 
     def getTimes(self):
         """
         Gets a list of all the times at which each sample taken.
         @return List of times associated with each point in the cycle
         """
-        return list(map(lambda x: float(x[2]), self.table))
+        return [float(x[2]) for x in self.table]
 
     def print_labels(self):
         """

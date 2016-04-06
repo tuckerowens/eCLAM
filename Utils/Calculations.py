@@ -3,8 +3,9 @@
 ## Imports
 ######################################################################
 
-import numpy as np
+import numpy as np, time
 from Dataset import Dataset
+import math
 
 # TODO: Add Support for RMS
 
@@ -39,11 +40,13 @@ def getYFromMaxImAtX(dataset: Dataset, point):
 
 
 def getRMSFromY(dataset: Dataset, point: int, width=5):
-    output = []
+    start = time.time()
     data = dataset.getHorizontalAt(point)
-    for i in range(len(data)-width):
-        output.append(sum(data[i:i+width])/width)
-    return output
+    out =  [math.sqrt(sum(map(lambda x: x**2, data[i:i+width]))/width) for i in range(len(data)-width)]
+    print("Building RMS on %s for p:%i in %fs" % (dataset, point, time.time() - start))
+    return out
+
+
 
 def getXAtMinIm(dataset: Dataset):
     data = dataset.getPlane()

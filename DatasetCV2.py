@@ -32,7 +32,8 @@ class DatasetCV2(Dataset.Dataset):
         @param point:
         @return
         """
-        return list(map(lambda x: x.getDataAtPoint(point), self.data))
+        return [x.getDataAtPoint(point) for x in self.data]
+
 
     def getVerticalAt(self, point):
         """
