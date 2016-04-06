@@ -22,6 +22,7 @@ class DatasetCV2(Dataset.Dataset):
         @param directory:
         @return
         """
+        super().__init__()
         self.info = info
         self.data = list(map(lambda x: CycleCV2.CycleCV2(x), files))
 
@@ -62,6 +63,8 @@ class DatasetCV2(Dataset.Dataset):
         @return
         """
         return range(0, len(self.data))
+
+
 
     def __str__(self, *args, **kwargs):
         return "t%s @ %s" % (self.info["Trial"][0], self.info["Concentration"][0])

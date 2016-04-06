@@ -27,6 +27,7 @@ class Plotter:
         """
         self.dataset = dataset
 
+
     def updateData(self, dataset):
         """
         UpdateData sets the dataset variable to the parameter value.
@@ -40,6 +41,12 @@ class Plotter:
         @return the dataset variable held by the plotter.
         """
         return self.dataset
+
+    def __str__(self, *args, **kwargs):
+        if self.plotInfoStr != None:
+            return self.plotInfoStr
+        return ""
+
 
     def createXPointPlot(self, point):
         """
@@ -59,8 +66,10 @@ class Plotter:
         a = f.add_subplot(111)
         tmp_index = self.dataset.getCurrentIndex()
         legend = []
+        self.plotInfoStr = ""
         for i in range(0, self.dataset.getSize()):
             print("Plotting index ", i )
+            self.plotInfoStr += self.dataset.getInfo() + '\n'
             legend.append(str(self.dataset))
             x = self.dataset.getYUnits()
             y = self.dataset.getVerticalAt(point)
@@ -91,9 +100,11 @@ class Plotter:
 
         tmp_index = self.dataset.getCurrentIndex()
         legend = []
+        self.plotInfoStr = ""
         for i in range(0, self.dataset.getSize()):
             print("Plotting index ", i )
             legend.append(str(self.dataset))
+            self.plotInfoStr += self.dataset.getInfo() + '\n'
             x = np.array(self.dataset.getXUnits())
             y = np.array(self.dataset.getHorizontalAt(point))
             a.set_xlabel("Voltage (V)")
@@ -124,12 +135,16 @@ class Plotter:
 
         # haven't touched this yet. will likely add new field in gui to cycle through indexes of spectras
 
+        self.plotInfoStr = self.dataset.getInfo()
+
         print("Plotting spectra at index:", index)
         f = Figure()
         a = f.add_subplot(111)
 
         x = np.array(list(self.dataset.getXUnits()))
         y = np.array(range(len(self.dataset.getYUnits())))
+
+        print("---\nsize of x: %i\nsize of y: %i" % (len(x), len(y)))
 
         X, Y = np.meshgrid(x, y)
         Z = np.array(self.dataset.getPlane()).transpose()

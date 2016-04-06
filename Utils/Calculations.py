@@ -38,6 +38,13 @@ def getYFromMaxImAtX(dataset: Dataset, point):
     return list(dataset.getVerticalAt(point)).index(max(dataset.getVerticalAt( point)))
 
 
+def getRMSFromY(dataset: Dataset, point: int, width=5):
+    output = []
+    data = dataset.getHorizontalAt(point)
+    for i in range(len(data)-width):
+        output.append(sum(data[i:i+width])/width)
+    return output
+
 def getXAtMinIm(dataset: Dataset):
     data = dataset.getPlane()
     curMin = data[0][0]

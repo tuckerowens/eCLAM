@@ -1,7 +1,7 @@
-import Dataset, AverageDataset
+import Dataset, AverageDataset, time
 
 ######################################################################
-## Multiset
+# Multiset
 ######################################################################
 
 class Multiset(Dataset.Dataset):
@@ -11,6 +11,7 @@ class Multiset(Dataset.Dataset):
     The reason that an interface is used is so that we can specify different datasets for different types of testing.
     """
     def __init__(self):
+        super().__init__()
         self.datasets = []
         self.average = ""
         self.currentIndex = 0
@@ -27,23 +28,25 @@ class Multiset(Dataset.Dataset):
         self.datasets.append(dataset)
 
         # initialize the average dataset cache
-        if self.average == "":
-            self.average = AverageDataset.AverageDataset(len(dataset.data), len(dataset.data[0].table), len(dataset.data[0].table[0]))
+        # if self.average == "":
+        #     self.average = AverageDataset.AverageDataset(len(dataset.data), len(dataset.data[0].table), len(dataset.data[0].table[0]))
 
         # initialize the currentDataset pointer a dataset
         if self.currentDataset == "":
             self.currentDataset = self.datasets[self.getSize() - 1]
 
+        start = time.time()
         # recalculate average based on new dataset addition
-        for c in range(0, len(self.datasets[0].data)):
-            for x in range(0, len(self.datasets[0].data[self.getSize() - 1].table)):
-                for y in range(0, len(self.datasets[0].data[self.getSize() - 1].table[0])):
-                    if self.is_float(str=dataset.data[c].table[x][y]):
-                        addend_a = float(self.average.data[c].table[x][y]) * (self.getSize() - 1) / self.getSize()
-                        addend_b = float(dataset.data[c].table[x][y]) / self.getSize()
-                        self.average.data[c].table[x][y] = addend_a + addend_b
-                    else:
-                        self.average.data[c].table[x][y] = dataset.data[c].table[x][y]
+        # for c in range(0, len(self.datasets[0].data)):
+        #     for x in range(0, len(self.datasets[0].data[self.getSize() - 1].table)):
+        #         for y in range(0, len(self.datasets[0].data[self.getSize() - 1].table[0])):
+        #             if self.is_float(str=dataset.data[c].table[x][y]):
+        #                 addend_a = float(self.average.data[c].table[x][y]) * (self.getSize() - 1) / self.getSize()
+        #                 addend_b = float(dataset.data[c].table[x][y]) / self.getSize()
+        #                 self.average.data[c].table[x][y] = addend_a + addend_b
+        #             else:
+        #                 self.average.data[c].table[x][y] = dataset.data[c].table[x][y]
+        print("Done adding one Dataset in %f" % (time.time() - start))
 
     def getSize(self):
         """
@@ -106,6 +109,12 @@ class Multiset(Dataset.Dataset):
             self.currentDataset = self.average
         else:
             self.currentDataset = self.datasets[self.currentIndex]
+
+    def applyFilter(self, filter: Dataset):
+        output = Multiset()
+        for ds in self.datasets:
+            output.addDataset(filter(ds))
+        return output
 
     def __str__(self, *args, **kwargs):
         return str(self.currentDataset)

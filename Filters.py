@@ -6,6 +6,7 @@
 from Dataset import Dataset
 from Utils import Calculations
 from scipy.ndimage.filters import gaussian_filter1d, gaussian_filter
+import numpy as np
 
 # TODO: Add support for RMS bg subtraction
 
@@ -109,47 +110,6 @@ class Filter(Dataset):
         return str(self.dataset)
 
 
-######################################################################
-## MinMaxAvgSubtraction
-######################################################################
-
-class MinMaxAvgSubtraction(Filter):
-    """
-
-    """
-    def getHorizontalAt(self, point):
-        """
-        Overrides filter.getHorizontalAt
-        @param point:
-        @return
-        """
-        if not point in self.yPoint.keys():
-            data = super().getHorizontalAt(point)
-            bg = Calculations.findBackgroundByMinMax(self.dataset)
-            self.yPoint[point] = list(map(lambda x: x-bg[point], data))
-        return self.yPoint[point]
-
-    def getVerticalAt(self, point):
-        """
-        Overrides filter.getVerticalAt
-        @param point:
-        @return
-        """
-        if not point in self.xPoint.keys():
-            data = super().getVerticalAt(point)
-            bg = Calculations.findBackgroundByMinMax(self.dataset)
-            self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
-        return self.xPoint[point]
-
-    def getPlane(self):
-        """
-        Overrides filter.getPlane
-        @return
-        """
-
-        if self.plane == None:
-            self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
-        return self.plane
 
 ######################################################################
 ## GaussSmooth
@@ -248,44 +208,60 @@ class BackgroundSubtraction(Filter):
             self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
         return self.plane
 
-class RMSBackground(Filter):
-    """
-
-    """
+class SNR_Evaluation(Filter):
+    def __init__(self, dataset):
+        super().__init__(RMS_Evaluation(dataset))
+        self.data = [max(self.dataset.getHorizontalAt(i))/min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
 
     def getHorizontalAt(self, point):
-        """
-        Overrides filter.getHorizontalAt
-
-        @param point:
-        @return
-        """
-        if not point in self.yPoint.keys():
-            data = super().getHorizontalAt(point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
-            self.yPoint[point] = list(map(lambda x: x-bg[point], data))
-        return self.yPoint[point]
+        return self.data
 
     def getVerticalAt(self, point):
-        """
-        Overrides filter.getVertical
-
-        @param point:
-        @return
-        """
-        if not point in self.xPoint.keys():
-            data = super().getVerticalAt(point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
-            self.xPoint[point] = [data[i] - bg[i] for i in range(len(data))]
-        return  self.xPoint[point]
+        return self.data
 
     def getPlane(self):
-        """
-        Overrides filter.getPlane
+        return [self.data for i in range(len(self.data))]
 
-        @return
-        """
-        if self.plane == None:
-            self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
-        return self.plane
+    def getXUnits(self):
+        return np.array(range(len(self.getHorizontalAt(0))))
+
+    def getYUnits(self):
+        return np.array(range(len(self.getVerticalAt(0))))
+
+class RMS_Evaluation(Filter):
+
+    def __init__(self, dataset):
+        super().__init__(dataset)
+        self.data = np.array([Calculations.getRMSFromY(self.dataset, i) for i in range(len(self.dataset.getVerticalAt(0)))]).transpose()
+
+    def getHorizontalAt(self, point):
+        return [col[point] for col in self.data]
+
+    def getVerticalAt(self, point):
+        return self.data[point]
+
+    def getPlane(self):
+        return self.data
+
+    def getXUnits(self):
+        return np.array(range(len(self.getHorizontalAt(0))))
+
+class LocalSNR_Evaluation(Filter):
+
+    def __init__(self, dataset):
+        super().__init__(RMS_Evaluation(dataset))
+        maxes = [max(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
+        self.data = [[self.dataset.getVerticalAt(j)[i]/maxes[i] for i in range(len(self.dataset.getVerticalAt(j)))] for j in range(len(self.dataset.getHorizontalAt(0)))]
+
+    def getHorizontalAt(self, point):
+        return [col[point] for col in self.data]
+
+    def getVerticalAt(self, point):
+        return self.data[point]
+
+    def getPlane(self):
+        return self.data
+
+    def getXUnits(self):
+        return np.array(range(len(self.data)))
 

@@ -136,6 +136,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.plotArea.grid(row=0, column=1, sticky=NSEW)
         self.plotArea.grid_columnconfigure(0, weight=1)
         self.plotArea.grid_rowconfigure(0, weight=1)
+        self.sidebar.grid_columnconfigure(0, weight=1)
 
         lowerSection.grid_rowconfigure(0, weight=1)
         lowerSection.grid_columnconfigure(1, weight=1)
@@ -194,6 +195,16 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.backgroundOptions = LabelFrame(self.sidebar, text="Filter Options")
         self.backgroundOptions.grid(sticky=NSEW)
 
+        outputFrame = LabelFrame(self.sidebar,text="Relevant Information")
+        outputFrame.grid(sticky=NSEW)
+
+        self.txtOutput = Text(outputFrame, width=10, height=4)
+        self.txtOutput.grid(sticky=NSEW)
+
+        outputFrame.grid_columnconfigure(0, weight=1)
+        outputFrame.grid_rowconfigure(0, weight=1)
+
+
         self.chkVarsFilters = {}
         self.filterOptions = {}
 
@@ -222,10 +233,14 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         filterStack = self.dataset
         for className in self.filterOptions.keys():
             if self.chkVarsFilters[className].get():
-                filterStack = self.filterOptions[className](filterStack)
+                filterStack = filterStack.applyFilter(self.filterOptions[className])
                 print("Applying Filter: %s" % (className))
         self.plotter.updateData(filterStack)
         self.updateView()
+
+    def updateText(self,text):
+        self.txtOutput.delete(1.0, END)
+        self.txtOutput.insert(END, text)
 
     def updateActivePlot(self, event):
         """
@@ -276,6 +291,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             self.lstActivePlots.select_set(list(self.plots.keys()).index(self.activePlot))
             self.plots[self.activePlot].grid(row=0, column=0, sticky=NSEW)
             self.plots[self.activePlot].tkraise()
+        if self.plotter != None:
+            self.updateText(str(self.plotter))
 
     def deletePlot(self, event):
         """
