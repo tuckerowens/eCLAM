@@ -6,7 +6,7 @@
 from Dataset import Dataset
 from Utils import Calculations
 from scipy.ndimage.filters import gaussian_filter1d, gaussian_filter
-import numpy as np
+import numpy as np, time
 
 # TODO: Add support for RMS bg subtraction
 
@@ -210,8 +210,12 @@ class BackgroundSubtraction(Filter):
 
 class SNR_Evaluation(Filter):
     def __init__(self, dataset):
+        print("Building Local SNR Evalutaion")
+        start = time.time()
         super().__init__(RMS_Evaluation(dataset))
+        print("\tRMS Evale: %f" % (time.time() - start))
         self.data = [max(self.dataset.getHorizontalAt(i))/min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
+        print("\tData Build: %f" % (time.time() - start))
 
     def getHorizontalAt(self, point):
         return self.data
@@ -231,8 +235,10 @@ class SNR_Evaluation(Filter):
 class RMS_Evaluation(Filter):
 
     def __init__(self, dataset):
+        start = time.time()
         super().__init__(dataset)
         self.data = np.array([Calculations.getRMSFromY(self.dataset, i) for i in range(len(self.dataset.getVerticalAt(0)))]).transpose()
+        print("RMS_Evaluation build in %f" % (time.time() - start))
 
     def getHorizontalAt(self, point):
         return [col[point] for col in self.data]
@@ -249,9 +255,15 @@ class RMS_Evaluation(Filter):
 class LocalSNR_Evaluation(Filter):
 
     def __init__(self, dataset):
+        start = time.time()
+        print("Building Local SNR Evalutaion")
         super().__init__(RMS_Evaluation(dataset))
+        print("\tRMS_Evaluation %f" % (time.time() - start))
         maxes = [max(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
+        print("\tMaxes found %f" % (time.time() - start))
         self.data = [[self.dataset.getVerticalAt(j)[i]/maxes[i] for i in range(len(self.dataset.getVerticalAt(j)))] for j in range(len(self.dataset.getHorizontalAt(0)))]
+        print("\tdata generated %f" % (time.time() - start))
+        print ("---")
 
     def getHorizontalAt(self, point):
         return [col[point] for col in self.data]
