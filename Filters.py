@@ -239,12 +239,9 @@ class SNR_Evaluation(Filter):
 class RMS_Evaluation(Filter):
 
     def __init__(self, dataset):
-        start = time.time()
         super().__init__(dataset)
-        print("Building RMS Eval -- ")
         rang = range(len(self.dataset.getVerticalAt(0)))
         self.data = np.array([Calculations.getRMSFromY(self.dataset, i) for i in rang]).transpose()
-        print("RMS_Evaluation build in %f" % (time.time() - start))
 
     def getHorizontalAt(self, point):
         return [col[point] for col in self.data]
