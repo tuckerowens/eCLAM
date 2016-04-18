@@ -6,6 +6,8 @@
 import matplotlib, DatasetFactory, Plotter, PlotWindow, PlotOptionsWindow, FileSelectionGui
 matplotlib.use('TkAgg')
 
+import concurrent.futures
+
 from tkinter import filedialog
 from Utils.Enums import PlotType
 from Utils import ProjectUpdater
@@ -195,6 +197,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.backgroundOptions = LabelFrame(self.sidebar, text="Filter Options")
         self.backgroundOptions.grid(sticky=NSEW)
 
+        scrollBar = Scrollbar(self.backgroundOptions)
+
         outputFrame = LabelFrame(self.sidebar,text="Relevant Information")
         outputFrame.grid(sticky=NSEW)
 
@@ -348,7 +352,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         @return
         """
         self.fileSelector = FileSelectionGui.FileSelectionGui(self, self)
-        print("Created File Selector")
+
 
     def handleFileSelectionResponce(self, fileList, recognizer):
         """
@@ -367,9 +371,15 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         self.dataset = DatasetFactory.buildMultiset()
 
-        for i in fileList.keys():
-            self.dataset.addDataset(DatasetFactory.buildDataset(fileList[i], ast.literal_eval(i), hint=recognizer))
-        print("Done dataset of size", self.dataset.getSize())
+        with concurrent.futures.ThreadPoolExecutor() as tpe:
+            dsFutures = []
+            for i in fileList.keys():
+                dsFutures.append(tpe.submit(lambda x: DatasetFactory.buildDataset(fileList[x],
+                                                                                  ast.literal_eval(x),
+                                                                                  hint=recognizer), i))
+            for ff in dsFutures:
+                self.dataset.addDataset(ff.result())
+
         self.plotter = Plotter.Plotter(self.dataset)
 
     def createSpectraWithYHighlight(self, point):

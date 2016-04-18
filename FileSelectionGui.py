@@ -165,7 +165,7 @@ class FileSelectionGui(Toplevel):
             selections = box.curselection()
             subQuery = queries
             queries = []
-            query = {}
+            
             for s in selections:
                 for q in subQuery:
                     queries.append(dict(list(q.items()) + list({k: [self.elementSet[k][s]]}.items())))

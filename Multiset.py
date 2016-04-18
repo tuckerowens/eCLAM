@@ -1,10 +1,11 @@
-import Dataset, AverageDataset, time
+import Dataset, AverageDataset, time, concurrent.futures as futures
 
 ######################################################################
 # Multiset
 ######################################################################
 
 class Multiset(Dataset.Dataset):
+
     """
     Dataset is an interface that provides several methods that subclasses need to implement.
 
@@ -16,6 +17,7 @@ class Multiset(Dataset.Dataset):
         self.average = ""
         self.currentIndex = 0
         self.currentDataset = ""
+        self.logifyY = False
 
     def is_float(self, str):
         try:
@@ -25,28 +27,14 @@ class Multiset(Dataset.Dataset):
             return False
 
     def addDataset(self, dataset):
-        self.datasets.append(dataset)
 
-        # initialize the average dataset cache
-        # if self.average == "":
-        #     self.average = AverageDataset.AverageDataset(len(dataset.data), len(dataset.data[0].table), len(dataset.data[0].table[0]))
+        self.datasets.append(dataset)
+        self.logifyY = self.logifyY or dataset.logY
 
         # initialize the currentDataset pointer a dataset
         if self.currentDataset == "":
             self.currentDataset = self.datasets[self.getSize() - 1]
 
-        start = time.time()
-        # recalculate average based on new dataset addition
-        # for c in range(0, len(self.datasets[0].data)):
-        #     for x in range(0, len(self.datasets[0].data[self.getSize() - 1].table)):
-        #         for y in range(0, len(self.datasets[0].data[self.getSize() - 1].table[0])):
-        #             if self.is_float(str=dataset.data[c].table[x][y]):
-        #                 addend_a = float(self.average.data[c].table[x][y]) * (self.getSize() - 1) / self.getSize()
-        #                 addend_b = float(dataset.data[c].table[x][y]) / self.getSize()
-        #                 self.average.data[c].table[x][y] = addend_a + addend_b
-        #             else:
-        #                 self.average.data[c].table[x][y] = dataset.data[c].table[x][y]
-        print("Done adding one Dataset in %f" % (time.time() - start))
 
     def getSize(self):
         """
@@ -112,9 +100,21 @@ class Multiset(Dataset.Dataset):
 
     def applyFilter(self, filter: Dataset):
         output = Multiset()
-        for ds in self.datasets:
-            output.addDataset(filter(ds))
-        return output
+        if filter.takesMultiset:
+            if filter.filterSet != []:
+                for f in filter.filterSet:
+                    output.addDataset(f(filter(self.datasets), self.datasets))
+                return output
+            output.addDataset(filter(self.datasets))
+            return output
+
+        with futures.ThreadPoolExecutor() as executor:
+            filterFutures = []
+            for ds in self.datasets:
+                filterFutures.append(executor.submit(filter, ds))
+            for ff in filterFutures:
+                output.addDataset(ff.result())
+            return output
 
     def __str__(self, *args, **kwargs):
         return str(self.currentDataset)

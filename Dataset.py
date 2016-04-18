@@ -5,17 +5,13 @@
 import time
 import numpy as np
 class Dataset:
+    logY = False
     """
     Dataset is an interface that provides several methods that subclasses need to implement.
 
     The reason that an interface is used is so that we can specify different datasets for different types of testing.
     """
 
-    def __init__(self):
-        self.min = None
-        self.max = None
-        self.gMinCoord = None
-        self.gMaxCoord = None
 
     def getSize(self):
         """
@@ -87,7 +83,7 @@ class Dataset:
         pass
 
     def getMaxCoord(self):
-        if self.gMaxCoord == None:
+        if not 'gMaxCoord' in vars(self):
             m = self.getMax()
             self.gMaxCoord = self.getCoordsOfValue(m)[0]
         return self.gMaxCoord
@@ -102,22 +98,27 @@ class Dataset:
         return (list(matches))
 
     def getMinCoord(self):
-        if self.gMinCoord == None:
+        if not 'gMinCoord' in vars(self):
             m = self.getMin()
             self.gMinCoord = self.getCoordsOfValue(m)[0]
         return self.gMinCoord
 
 
     def getMin(self):
-        if self.min == None:
+        if not 'min' in vars(self):
             self.min =  min([min(i) for i in self.getPlane()])
 
         return self.min
 
     def getMax(self):
-        if self.max == None:
+        if not 'max' in vars(self):
             self.max = max(np.array(self.getPlane()).flatten())
         return self.max
+
+
+    def addDataset(self, dataset, scale=1, label=""):
+        source = np.array(self.getPlane())
+        return SimpleDataset(source + (np.array(dataset.getPlane()) * scale), self.getXUnits(), self.getYUnits(), label=label)
 
 
     def getInfo(self):
@@ -133,3 +134,29 @@ class Dataset:
         outstr += "  Min %s @ %s" % (str(self.getMin()), str(self.getMinCoord())) + '\n'
         outstr += "  Max %s @ %s" % (str(self.getMax()), str(self.getMaxCoord()))
         return outstr
+
+
+class SimpleDataset(Dataset):
+    def __init__(self, data, xInfo, yInfo, label="Simple Dataset"):
+        self.data = data
+        self.xInfo = xInfo
+        self.yInfo = yInfo
+        self.label = label
+
+    def getHorizontalAt(self, point):
+        return [col[point] for col in self.data]
+
+    def getVerticalAt(self, point):
+        return self.data[point]
+
+    def getPlane(self):
+        return self.data
+
+    def getXUnits(self):
+        return self.xInfo
+
+    def getYUnits(self):
+        return self.yInfo
+
+    def __str__(self):
+        return self.label

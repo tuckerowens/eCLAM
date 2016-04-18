@@ -3,7 +3,7 @@
 ## Imports
 ######################################################################
 
-import matplotlib
+import matplotlib, time
 import numpy as np
 from matplotlib.figure import Figure
 
@@ -68,18 +68,21 @@ class Plotter:
         legend = []
         self.plotInfoStr = ""
         for i in range(0, self.dataset.getSize()):
-            print("Plotting index ", i )
             self.plotInfoStr += self.dataset.getInfo() + '\n'
             legend.append(str(self.dataset))
             x = self.dataset.getYUnits()
             y = self.dataset.getVerticalAt(point)
             a.set_xlabel("Voltage (V)")
             a.set_ylabel("Current (Im)")
-            a.plot(x, y)
+            if self.dataset.logifyY:
+                a.semilogy(x, np.abs(y))
+            else:
+                a.plot(x, y)
+
             self.dataset.setCurrentIndex((self.dataset.getCurrentIndex() + 1) % self.dataset.getSize())
         a.legend(legend, loc='upper left')  # change this later to reflect cycle numbers or something relevant
         self.dataset.setCurrentIndex(tmp_index)
-
+        f.suptitle(str(self.dataset))
         return f
 
     def createYPointPlot(self, point):
@@ -109,11 +112,15 @@ class Plotter:
             y = np.array(self.dataset.getHorizontalAt(point))
             a.set_xlabel("Voltage (V)")
             a.set_ylabel("Current (Im)")
-            a.plot(x, y)
+            if self.dataset.logifyY:
+                a.semilogy(x, np.abs(y))
+            else:
+                a.plot(x, y)
+
             self.dataset.setCurrentIndex((self.dataset.getCurrentIndex() + 1) % self.dataset.getSize())
         a.legend(legend, loc='upper left')  # change this later to reflect cycle numbers or something relevant
         self.dataset.setCurrentIndex(tmp_index)
-
+        f.suptitle(str(self.dataset))
         a.set_xlabel("Cycle")
         a.set_ylabel("Current at point %s (Im)" % point)
 
@@ -149,12 +156,17 @@ class Plotter:
         X, Y = np.meshgrid(x, y)
         Z = np.array(self.dataset.getPlane()).transpose()
 
-        a.pcolormesh(X, Y, Z)
+        if (self.dataset.logifyY):
+            Z = Z + np.abs(Z.min())
+            a.pcolormesh(X, Y, Z, norm=matplotlib.colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+        else:
+            a.pcolormesh(X, Y, Z)
         bar = matplotlib.cm.ScalarMappable()
         bar.set_array(Z)
         if contour:
             a.contour(X, Y, Z)
-        f.colorbar(bar, ax=a)
+        f.colorbar(bar, ax=a, label="Current (Im)")
+        f.suptitle(str(self.dataset))
 
         if xHighlight != None:
             a.axvline(x=xHighlight)
