@@ -187,17 +187,34 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.spnrNumVoltage.grid(row=2, column=1, sticky=EW)
 
         self.voltageAverage = BooleanVar()
-        self.chkVoltageGetAverage = Checkbutton(addPltFrame, text="Get Average", variable=self.voltageAverage)
+        self.chkVoltageGetAverage = Checkbutton(addPltFrame, text="Fill Lines", variable=self.voltageAverage)
         self.chkVoltageGetAverage.grid(row=2, column=2, padx=5)
 
         self.plotOptions = LabelFrame(self.sidebar, text="Plot Options")
         self.plotOptions.grid(sticky=NSEW)
         self.activePlotOptions = None
 
-        self.backgroundOptions = LabelFrame(self.sidebar, text="Filter Options")
-        self.backgroundOptions.grid(sticky=NSEW)
 
-        scrollBar = Scrollbar(self.backgroundOptions)
+
+        filterOverFrame = LabelFrame(self.sidebar, text="Filter Options")
+        filterOverFrame.grid(sticky=NSEW)
+
+        filterOverFrame.columnconfigure(0, weight=10)
+        filterOverFrame.columnconfigure(1, weight=1)
+
+        canvas = Canvas(filterOverFrame)
+        canvas.grid(sticky=NSEW, row=0, column=0)
+
+
+        self.backgroundOptions = Frame(canvas, bd=0)
+
+
+        scrollBar = Scrollbar(filterOverFrame, orient="vertical", command=canvas.yview)
+        scrollBar.grid(sticky=NSEW, row=0, column=1)
+        canvas.configure(yscrollcommand=scrollBar.set)
+
+        canvas.create_window((0,0),window=self.backgroundOptions, anchor=NW)
+        self.backgroundOptions.bind("<Configure>", lambda x: canvas.configure(scrollregion=canvas.bbox("all"), height=100))
 
         outputFrame = LabelFrame(self.sidebar,text="Relevant Information")
         outputFrame.grid(sticky=NSEW)
@@ -208,10 +225,13 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         outputFrame.grid_columnconfigure(0, weight=1)
         outputFrame.grid_rowconfigure(0, weight=1)
 
+        self.backgroundOptions.grid_columnconfigure(0, weight=1)
+        self.backgroundOptions.grid_columnconfigure(1, weight=8)
+
 
         self.chkVarsFilters = {}
         self.filterOptions = {}
-
+        filterCol = 0
         for name, obj in inspect.getmembers(sys.modules[Filters.BackgroundSubtraction.__module__]):
             if inspect.isclass(obj) and issubclass(obj, Filters.Filter):
                 if name != "Filter":
@@ -220,7 +240,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
                     args, vargs, keys, defaults = inspect.getargspec(obj)
                     # print(args)
                     temp = Checkbutton(self.backgroundOptions, text=name, variable=self.chkVarsFilters[name], command=self.filtersChanged)
-                    temp.grid(sticky=NSEW)
+                    temp.grid(column=1, row=filterCol, sticky=NSEW)
+                    filterCol = filterCol + 1
 
     def update(self):
         version = ProjectUpdater.getCurrentVersion()
@@ -234,11 +255,20 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         """
         if self.plotter == None:
             return
+        if not'filtersetStack' in vars(self):
+            self.filtersetStack = []
         filterStack = self.dataset
         for className in self.filterOptions.keys():
             if self.chkVarsFilters[className].get():
-                filterStack = filterStack.applyFilter(self.filterOptions[className])
-                print("Applying Filter: %s" % (className))
+                if not className in self.filtersetStack:
+                    self.filtersetStack.append(className)
+            else:
+                if className in self.filtersetStack:
+                    self.filtersetStack.remove(className)
+
+        for className in self.filtersetStack:
+            filterStack = filterStack.applyFilter(self.filterOptions[className])
+            print("Applying Filter: %s" % (className))
         self.plotter.updateData(filterStack)
         self.updateView()
 
@@ -321,20 +351,19 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         @param point:
         @return
         """
-
+        self.plotter.dataset.setAverageDataset(bool(self.voltageAverage.get()))
         if type == PlotType.SPECTRA:
             self.dataset.setCurrentIndex(int(self.spectPlotNum.get()))
-            self.plots["Spectra " + str(self.dataset.currentDataset)] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
+            self.plots["Spectra " + str(self.dataset)] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(contour=1 if self.varShowContour.get() else 0, index=int(self.spectPlotNum.get())), type)
             self.activePlot = "Spectra " + str(self.dataset.currentDataset)
 
         elif type == PlotType.VOLTAGE_LINE:
-            self.dataset.setAverageDataset(bool(self.voltageAverage.get()))
+
 
             value = point if point != -1 else int(self.spnrNumVoltage.get())
             self.activePlot = "Voltage - pt" + str(value)
             self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(value), type)
 
-            self.dataset.setAverageDataset(False)
 
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())

@@ -186,33 +186,16 @@ class BackgroundSubtraction(Filter):
     def __init__(self, dataset):
         super().__init__(dataset)
         self.logY = dataset.logY
+        bg = np.array(Calculations.findBackgroundByAverage(self.dataset))
+        inner = np.array(dataset.getPlane())
+        self.data = [i - bg for i in inner]
+
 
     def getHorizontalAt(self, point):
-        """
-        Overrides filter.getHorizontalAt
-
-        @param point:
-        @return
-        """
-        if not point in self.yPoint.keys():
-            data = super().getHorizontalAt(point)
-            bg = Calculations.findBackgroundByAverage(self.dataset)
-            self.yPoint[point] = list(map(lambda x: x-bg[point], data))
-        return self.yPoint[point]
+        return [col[point] for col in self.data]
 
     def getVerticalAt(self, point):
-        """
-        Overrides filter.getVertical
-
-        @param point:
-        @return
-        """
-        if not point in self.xPoint.keys():
-            data = super().getVerticalAt(point)
-            if not 'bg' in vars(self):
-                self.bg = Calculations.findBackgroundByAverage(self.dataset)
-            self.xPoint[point] = [data[i] - self.bg[i] for i in range(len(data))]
-        return  self.xPoint[point]
+        return self.data[point]
 
     def getPlane(self):
         """
@@ -220,33 +203,12 @@ class BackgroundSubtraction(Filter):
 
         @return
         """
-        if self.plane == None:
-            self.plane = [self.getVerticalAt(i) for i in range(len(self.dataset.getXUnits()))]
-        return self.plane
+
+        return self.data
     def __str__(self, *args, **kwargs):
         return  "-BG(" + str(self.dataset) + ")"
 
-class SNR_Evaluation(Filter):
-    def __init__(self, dataset):
-        super().__init__(RMS_Evaluation(dataset))
-        self.data = [max(self.dataset.getHorizontalAt(i))/min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
 
-    def getHorizontalAt(self, point):
-        return self.data
-
-    def getVerticalAt(self, point):
-        return self.data
-
-    def getPlane(self):
-        return [self.data for i in range(len(self.data))]
-
-    def getXUnits(self):
-        return np.array(range(len(self.getHorizontalAt(0))))
-
-    def getYUnits(self):
-        return np.array(range(len(self.getVerticalAt(0))))
-    def __str__(self, *args, **kwargs):
-        return  "SNR(" + str(self.dataset) + ")"
 
 class RMS_Evaluation(Filter):
 
@@ -269,27 +231,6 @@ class RMS_Evaluation(Filter):
     def __str__(self, *args, **kwargs):
         return  "RMS(" + str(self.dataset) + ")"
 
-
-class LocalSNR_Evaluation(Filter):
-
-    def __init__(self, dataset):
-        super().__init__(RMS_Evaluation(dataset))
-        maxes = [max(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
-        self.data = [[self.dataset.getVerticalAt(j)[i]/maxes[i] for i in range(len(self.dataset.getVerticalAt(j)))] for j in range(len(self.dataset.getHorizontalAt(0)))]
-
-    def getHorizontalAt(self, point):
-        return [col[point] for col in self.data]
-
-    def getVerticalAt(self, point):
-        return self.data[point]
-
-    def getPlane(self):
-        return self.data
-
-    def getXUnits(self):
-        return np.array(range(len(self.data)))
-    def __str__(self, *args, **kwargs):
-        return  "SNR(" + str(self.dataset) + ")"
 
 class FFT_Eval(Filter):
     logY = True
@@ -396,3 +337,46 @@ class FindFlow(Filter):
         flowProc = subprocess.Popen("flow")
         out = flowProc.communicate(self.flow.buildEdges())
 
+class LocalSNR_Evaluation(Filter):
+
+    def __init__(self, dataset):
+        super().__init__(RMS_Evaluation(dataset))
+        maxes = [min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
+        self.data = [[np.square(self.dataset.getVerticalAt(j)[i]/maxes[i]) for i in range(len(self.dataset.getVerticalAt(j)))] for j in range(len(self.dataset.getHorizontalAt(0)))]
+
+    def getHorizontalAt(self, point):
+        return [col[point] for col in self.data]
+
+    def getVerticalAt(self, point):
+        return self.data[point]
+
+    def getPlane(self):
+        return self.data
+
+    def getXUnits(self):
+        return np.array(range(len(self.data)))
+    def __str__(self, *args, **kwargs):
+        return  "SNR(" + str(self.dataset) + ")"
+
+
+class SNR_Evaluation(Filter):
+    def __init__(self, dataset):
+        super().__init__(RMS_Evaluation(dataset))
+        self.data = [max(self.dataset.getHorizontalAt(i))/min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
+
+    def getHorizontalAt(self, point):
+        return self.data
+
+    def getVerticalAt(self, point):
+        return self.data
+
+    def getPlane(self):
+        return [self.data for i in range(len(self.data))]
+
+    def getXUnits(self):
+        return np.array(range(len(self.getHorizontalAt(0))))
+
+    def getYUnits(self):
+        return np.array(range(len(self.getVerticalAt(0))))
+    def __str__(self, *args, **kwargs):
+        return  "SNR(" + str(self.dataset) + ")"

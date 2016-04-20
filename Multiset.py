@@ -6,6 +6,7 @@ import Dataset, AverageDataset, time, concurrent.futures as futures
 
 class Multiset(Dataset.Dataset):
 
+    fillPlot = False
     """
     Dataset is an interface that provides several methods that subclasses need to implement.
 
@@ -93,10 +94,7 @@ class Multiset(Dataset.Dataset):
 
     def setAverageDataset(self, enable):
         print("Enable average:", enable)
-        if enable == True:
-            self.currentDataset = self.average
-        else:
-            self.currentDataset = self.datasets[self.currentIndex]
+        self.fillPlot = enable
 
     def applyFilter(self, filter: Dataset):
         output = Multiset()

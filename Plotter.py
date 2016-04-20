@@ -66,6 +66,7 @@ class Plotter:
         a = f.add_subplot(111)
         tmp_index = self.dataset.getCurrentIndex()
         legend = []
+        base = np.array(self.dataset.getVerticalAt(point))
         self.plotInfoStr = ""
         for i in range(0, self.dataset.getSize()):
             self.plotInfoStr += self.dataset.getInfo() + '\n'
@@ -74,6 +75,10 @@ class Plotter:
             y = self.dataset.getVerticalAt(point)
             a.set_xlabel("Voltage (V)")
             a.set_ylabel("Current (Im)")
+            if self.dataset.fillPlot:
+                a.fill_between(x, y, base, facecolor="lightblue")
+            else:
+                print("Fill not called")
             if self.dataset.logifyY:
                 a.semilogy(x, np.abs(y))
             else:
@@ -103,6 +108,7 @@ class Plotter:
 
         tmp_index = self.dataset.getCurrentIndex()
         legend = []
+        base = np.array(self.dataset.getHorizontalAt(point))
         self.plotInfoStr = ""
         for i in range(0, self.dataset.getSize()):
             print("Plotting index ", i )
@@ -112,6 +118,8 @@ class Plotter:
             y = np.array(self.dataset.getHorizontalAt(point))
             a.set_xlabel("Voltage (V)")
             a.set_ylabel("Current (Im)")
+            if self.dataset.fillPlot:
+                a.fill_between(x, y, base, facecolor="lightblue")
             if self.dataset.logifyY:
                 a.semilogy(x, np.abs(y))
             else:

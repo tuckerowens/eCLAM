@@ -34,23 +34,16 @@ class PlotWindow(Frame):
         @return
         """
         Frame.__init__(self, parent)
-        print("Plot Window Called")
+
         # a tk.DrawingAre
         self.plotType = plotType
         self.canvas = FigureCanvasTkAgg(figure, master=self)
-        print("\tCanvas")
         self.canvas.show()
-        print("\tShow")
         self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-        print("\tshow and pack")
-
         self.toolbar = NavigationToolbar2TkAgg(self.canvas, self)
         self.toolbar.update()
-        print("\tupdate toolbar")
         self.canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=1)
-
         self.canvas.mpl_connect('key_press_event', self.on_key_event)
-        print("Plot Window Made")
 
     def getPlotType(self):
         """
