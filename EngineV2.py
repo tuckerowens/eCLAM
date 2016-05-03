@@ -3,7 +3,7 @@
 ## Imports
 ######################################################################
 
-import matplotlib, DatasetFactory, Plotter, PlotWindow, PlotOptionsWindow, FileSelectionGui
+import matplotlib, DatasetFactory, Plotter, PlotWindow, PlotOptionsWindow, FileSelectionGui, FileWriter
 matplotlib.use('TkAgg')
 
 import concurrent.futures
@@ -13,7 +13,7 @@ from Utils.Enums import PlotType
 from Utils import ProjectUpdater
 import Filters, inspect, ast
 
-import sys
+import sys, os
 if sys.version_info[0] < 3:
     from Tkinter import *
 else:
@@ -26,35 +26,8 @@ else:
 class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
     """
     EngineV2 is the main program that runs the application.
-
-    @field activePlot:
-    @field activePlotOptions:
-    @field backgroundOptions:
-    @field chkVarsFilters:
-    @field dataset:
-    @field deletePlot:
-    @field fileSelector:
-    @field filterOptions:
-    @field filtersChanged:
-    @field generatePlot:
-    @field lblSelectedDir:
-    @field loadConfig:
-    @field lstActivePlots:
-    @field main:
-    @field plotArea:
-    @field plotOptions:
-    @field plots:
-    @field plotter:
-    @field selectDataset:
-    @field sidebar:
-    @field splash:
-    @field spnrNumCycle:
-    @field spnrNumVoltage:
-    @field tk:
-    @field updateActivePlot:
-    @field updateView:
-    @field varShowContour:
     """
+
     def __init__(self):
         """
         Constructor
@@ -194,7 +167,8 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         self.plotOptions.grid(sticky=NSEW)
         self.activePlotOptions = None
 
-
+        btnExport = Button(addPltFrame, text="Export", command=lambda: self.exportCSV(self.dataset))
+        btnExport.grid(sticky=EW, padx=10)
 
         filterOverFrame = LabelFrame(self.sidebar, text="Filter Options")
         filterOverFrame.grid(sticky=NSEW)
@@ -359,11 +333,9 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
 
         elif type == PlotType.VOLTAGE_LINE:
 
-
             value = point if point != -1 else int(self.spnrNumVoltage.get())
             self.activePlot = "Voltage - pt" + str(value)
             self.plots[self.activePlot] = PlotWindow.PlotWindow(self.plotArea, self.plotter.createYPointPlot(value), type)
-
 
         elif type == PlotType.CYCLE_LINE:
             value = point if point != -1 else int(self.spnrNumCycle.get())
@@ -374,6 +346,17 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
             raise Exception("Unknown Plot type")
 
         self.updateView()
+
+    def exportCSV(self, dataset):
+        """
+
+        @return
+        """
+        outputDir = filedialog.askdirectory()
+        if os.path.isdir(outputDir):
+            FileWriter.write_csv(outputDir, dataset)
+        else:
+            print("did not export to:" + outputDir)
 
     def loadConfig(self):
         """
@@ -419,7 +402,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         """
         self.plots["Spectra highlight " + str(point)] = \
             PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
-                    yHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
+                yHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
         self.activePlot = "Spectra highlight " + str(point)
         self.updateView()
 
@@ -431,7 +414,7 @@ class EngineV2(Tk, PlotOptionsWindow.PlotOptionInterface):
         """
         self.plots["Spectra highlight " + str(point)] = \
             PlotWindow.PlotWindow(self.plotArea, self.plotter.createSpectra(
-                    xHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
+                xHighlight=point, contour=1 if self.varShowContour.get() else 0), PlotType.SPECTRA)
         self.activePlot = "Spectra highlight " + str(point)
         self.updateView()
 

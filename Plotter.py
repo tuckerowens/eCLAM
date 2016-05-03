@@ -26,6 +26,8 @@ class Plotter:
         @return null
         """
         self.dataset = dataset
+        self.plotInfoStr = ""
+
 
 
     def updateData(self, dataset):

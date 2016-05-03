@@ -171,7 +171,7 @@ class GaussSmooth(Filter):
         return self.plane
 
     def __str__(self, *args, **kwargs):
-        return  "Gauss(" + str(self.dataset) + ")"
+        return "Gauss(" + str(self.dataset) + ")"
 
 
 ######################################################################
@@ -205,8 +205,9 @@ class BackgroundSubtraction(Filter):
         """
 
         return self.data
+
     def __str__(self, *args, **kwargs):
-        return  "-BG(" + str(self.dataset) + ")"
+        return "-BG(" + str(self.dataset) + ")"
 
 
 
@@ -228,19 +229,20 @@ class RMS_Evaluation(Filter):
 
     def getXUnits(self):
         return np.array(range(len(self.getHorizontalAt(0))))
+
     def __str__(self, *args, **kwargs):
-        return  "RMS(" + str(self.dataset) + ")"
+        return "RMS(" + str(self.dataset) + ")"
 
 
 class FFT_Eval(Filter):
     logY = True
+
     def __init__(self, dataset):
         super().__init__(dataset)
 
         f_ishift = np.fft.ifftshift(np.array(self.dataset.getPlane()))
         img_back = np.fft.ifft2(f_ishift)
         self.data = np.abs(img_back)
-
 
     def getHorizontalAt(self, point):
         return [col[point] for col in self.data]
@@ -255,7 +257,7 @@ class FFT_Eval(Filter):
         return np.array(range(len(self.data)))
 
     def __str__(self, *args, **kwargs):
-        return  "FFT(" + str(self.dataset) + ")"
+        return "FFT(" + str(self.dataset) + ")"
 
 
 class Average(Filter):
@@ -270,9 +272,6 @@ class Average(Filter):
         self.datasets = [ds.getPlane() for ds in datasets]
 
         self.data = np.average(self.datasets, 0)
-
-
-
 
     def getHorizontalAt(self, point):
         return [col[point] for col in self.data]
@@ -293,8 +292,6 @@ class Average(Filter):
     def __str__(self):
         return self.name
 
-
-
 class StandardDeviation(Filter):
     takesMultiset = True
     filterSet = [lambda this, data: Average(data), lambda this, data: Average(data).addDataset(this, label="Upper STD"),
@@ -308,8 +305,6 @@ class StandardDeviation(Filter):
             self.name += str(d) + '|'
         self.datasets = [ds.getPlane() for ds in datasets]
         self.data = np.std(self.datasets, 0)
-
-
 
     def getHorizontalAt(self, point):
         return [col[point] for col in self.data]
@@ -355,8 +350,9 @@ class LocalSNR_Evaluation(Filter):
 
     def getXUnits(self):
         return np.array(range(len(self.data)))
+
     def __str__(self, *args, **kwargs):
-        return  "SNR(" + str(self.dataset) + ")"
+        return "SNR(" + str(self.dataset) + ")"
 
 
 class SNR_Evaluation(Filter):
@@ -378,5 +374,6 @@ class SNR_Evaluation(Filter):
 
     def getYUnits(self):
         return np.array(range(len(self.getVerticalAt(0))))
+
     def __str__(self, *args, **kwargs):
-        return  "SNR(" + str(self.dataset) + ")"
+        return "SNR(" + str(self.dataset) + ")"
