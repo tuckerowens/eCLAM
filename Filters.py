@@ -348,6 +348,15 @@ class StandardDeviation(Filter):
     def __str__(self):
         return self.name
 
+
+
+class OptimalBGSub(Filter):
+
+    def __init__(self, dataset):
+        super().__init__(dataset)
+
+
+
 class LocalSNR_Evaluation(Filter):
 
     def __init__(self, dataset):
