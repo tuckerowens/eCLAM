@@ -205,10 +205,12 @@ class BackgroundSubtraction(Filter):
 
     """
 
-    def __init__(self, dataset):
+    def __init__(self, dataset, start=None, width=None):
         super().__init__(dataset)
-        info = AskUser(["Background Starting Cycle: ", "Background Width: "], defaults=[0, 5])
-        print("using " + str(info))
+        if start != None and width != None:
+            info = [start, width]
+        else:
+            info = AskUser(["Background Starting Cycle: ", "Background Width: "], defaults=[0, 5])
         self.logY = dataset.logY
         bg = np.array(Calculations.findBackgroundByAverage(self.dataset, startPoint=int(info[0]), endPoint=(int(info[1])-int(info[0]))))
         inner = np.array(dataset.getPlane())
@@ -354,7 +356,24 @@ class OptimalBGSub(Filter):
 
     def __init__(self, dataset):
         super().__init__(dataset)
+        print("Why don't you grab a cup of coffee")
+        bestIndex = 0
+        res = AskUser(["Scan Width: "], [5])
+        width = int(res[0])
+        best = -1
+        l = len(dataset.getHorizontalAt(0)) - width
+        for i in range(len(dataset.getHorizontalAt(0)) - width):
+            print(str((i/l)*100) + "% done")
+            ds = RMS_Evaluation(BackgroundSubtraction(dataset, start=i, width=width))
+            for j in range(len(ds.getVerticalAt(0))):
+                h = ds.getHorizontalAt(j)
+                snr = max(h)/min(h)
+                if best < snr:
+                    best = snr
+                    bestIndex = i
+                    print("Updating best to " + str(bestIndex))
 
+        self.dataset = BackgroundSubtraction(dataset, start=bestIndex, width=width)
 
 
 class LocalSNR_Evaluation(Filter):

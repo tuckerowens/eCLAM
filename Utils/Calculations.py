@@ -40,11 +40,8 @@ def getYFromMaxImAtX(dataset: Dataset, point):
 
 
 def getRMSFromY(dataset: Dataset, point: int, width=5):
-    start = time.time()
     data = dataset.getHorizontalAt(point)
-    print("Geting dataset: %is" % (time.time() - start))
     out =  [math.sqrt(sum(map(lambda x: x**2, data[i:i+width]))/width) for i in range(len(data)-width)]
-    print("Building output: %is" % (time.time() - start))
     return out
 
 
