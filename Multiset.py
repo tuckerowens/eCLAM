@@ -106,13 +106,10 @@ class Multiset(Dataset.Dataset):
             output.addDataset(filter(self.datasets))
             return output
 
-        with futures.ThreadPoolExecutor() as executor:
-            filterFutures = []
-            for ds in self.datasets:
-                filterFutures.append(executor.submit(filter, ds))
-            for ff in filterFutures:
-                output.addDataset(ff.result())
-            return output
+
+        for ds in self.datasets:
+            output.addDataset(filter(ds))
+        return output
 
     def __str__(self, *args, **kwargs):
         return str(self.currentDataset)

@@ -10,10 +10,12 @@ import numpy as np, time
 from FlowFinder import FlowFinder
 import subprocess
 # TODO: Add support for RMS bg subtraction
-
+import Utils.AskUserBox as ub
 ######################################################################
 ## Filter
 ######################################################################
+from Utils.AskUserBox import AskUser
+
 
 class Filter(Dataset):
 
@@ -115,7 +117,27 @@ class Filter(Dataset):
         return str(self.dataset)
 
 
+class RollingAverage(Filter):
+    def __init__(self, dataset):
+        super().__init__(dataset)
+        res = AskUser(["Rolling Average Width: "], defaults=[3])
+        width = int(res[0])
+        self.data = [Calculations.findBackgroundByAverage(self.dataset, startPoint=sp, endPoint=(sp+width)) for sp in range(len(dataset.getHorizontalAt(0))-width)]
 
+    def getHorizontalAt(self, point):
+        return [col[point] for col in self.data]
+
+    def getVerticalAt(self, point):
+        return self.data[point]
+
+    def getPlane(self):
+        return self.data
+
+    def getXUnits(self):
+        return np.array(range(len(self.getHorizontalAt(0))))
+
+    def __str__(self, *args, **kwargs):
+        return "RollingAvg(" + str(self.dataset) + ")"
 
 
 ######################################################################
@@ -126,7 +148,7 @@ class GaussSmooth(Filter):
     """
 
     """
-    def __init__(self, dataset, sigma=10):
+    def __init__(self, dataset):
         """
         Constructor
 
@@ -136,7 +158,7 @@ class GaussSmooth(Filter):
         """
         super().__init__(dataset)
         self.logY = dataset.logY
-        self.sigma = sigma
+        self.sigma = AskUser(["Gauss Smooth Sigma: "], defaults=[10])
         
     def getHorizontalAt(self, point):
         """
@@ -185,8 +207,10 @@ class BackgroundSubtraction(Filter):
 
     def __init__(self, dataset):
         super().__init__(dataset)
+        info = AskUser(["Background Starting Cycle: ", "Background Width: "], defaults=[0, 5])
+        print("using " + str(info))
         self.logY = dataset.logY
-        bg = np.array(Calculations.findBackgroundByAverage(self.dataset))
+        bg = np.array(Calculations.findBackgroundByAverage(self.dataset, startPoint=int(info[0]), endPoint=(int(info[1])-int(info[0]))))
         inner = np.array(dataset.getPlane())
         self.data = [i - bg for i in inner]
 
@@ -324,14 +348,6 @@ class StandardDeviation(Filter):
     def __str__(self):
         return self.name
 
-class FindFlow(Filter):
-
-    def __init__(self, dataset):
-        self.flow = FlowFinder(dataset)
-        print(self.flow.buildEdges())
-        flowProc = subprocess.Popen("flow")
-        out = flowProc.communicate(self.flow.buildEdges())
-
 class LocalSNR_Evaluation(Filter):
 
     def __init__(self, dataset):
@@ -354,26 +370,26 @@ class LocalSNR_Evaluation(Filter):
     def __str__(self, *args, **kwargs):
         return "SNR(" + str(self.dataset) + ")"
 
-
-class SNR_Evaluation(Filter):
-    def __init__(self, dataset):
-        super().__init__(RMS_Evaluation(dataset))
-        self.data = [max(self.dataset.getHorizontalAt(i))/min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
-
-    def getHorizontalAt(self, point):
-        return self.data
-
-    def getVerticalAt(self, point):
-        return self.data
-
-    def getPlane(self):
-        return [self.data for i in range(len(self.data))]
-
-    def getXUnits(self):
-        return np.array(range(len(self.getHorizontalAt(0))))
-
-    def getYUnits(self):
-        return np.array(range(len(self.getVerticalAt(0))))
-
-    def __str__(self, *args, **kwargs):
-        return "SNR(" + str(self.dataset) + ")"
+#
+# class SNR_Evaluation(Filter):
+#     def __init__(self, dataset):
+#         super().__init__(RMS_Evaluation(dataset))
+#         self.data = [max(self.dataset.getHorizontalAt(i))/min(self.dataset.getHorizontalAt(i)) for i in range(len(self.dataset.getVerticalAt(0)))]
+#
+#     def getHorizontalAt(self, point):
+#         return self.data
+#
+#     def getVerticalAt(self, point):
+#         return self.data
+#
+#     def getPlane(self):
+#         return [self.data for i in range(len(self.data))]
+#
+#     def getXUnits(self):
+#         return np.array(range(len(self.getHorizontalAt(0))))
+#
+#     def getYUnits(self):
+#         return np.array(range(len(self.getVerticalAt(0))))
+#
+#     def __str__(self, *args, **kwargs):
+#         return "SNR(" + str(self.dataset) + ")"
